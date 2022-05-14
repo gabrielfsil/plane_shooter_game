@@ -9,7 +9,7 @@ export function createAirplane() {
 
     var airplane = new THREE.Mesh(airPlaneGeometry, airPlaneMaterial);
 
-    airplane.position.set(-980, 10, 0);
+    airplane.position.set(-170, 10, 0);
     airplane.rotateZ(degreesToRadians(90));
 
     return airplane;
