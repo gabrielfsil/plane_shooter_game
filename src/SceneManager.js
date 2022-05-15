@@ -9,7 +9,7 @@ export function createGroundPlane(x = 0, y = 0, z = -0.02) {
     let gcolor = "rgb(60, 30, 150)";
 
 
-    var planeGeometry = new THREE.PlaneGeometry(400, 200, 20, 10);
+    var planeGeometry = new THREE.PlaneGeometry(400, 300, 20, 10);
     planeGeometry.translate(x, y, z);
     var planeMaterial = new THREE.MeshPhongMaterial({
         color: gcolor,
@@ -33,7 +33,7 @@ export function createGroundPlane(x = 0, y = 0, z = -0.02) {
 let plane = createGroundPlane();
 let planeAux = createGroundPlane();
 
-export function update(camera, airplane, scene, animationOn) {
+export function update(camera, airplane, scene,light, animationOn) {
 
     if (controlPlane === -1) {
         scene.add(plane);
@@ -43,6 +43,8 @@ export function update(camera, airplane, scene, animationOn) {
         if (camera.position.x < (10 + (controlPlane * 200))) {
             camera.translateOnAxis(vectorDirection, speed)
             airplane.translateY(-speed)
+            light.translateX(speed)
+            console.log(`${airplane.position.x.toFixed(2)}-${airplane.position.y.toFixed(2)}-${airplane.position.z.toFixed(2)}`)
 
         } else {
             controlPlane++;
