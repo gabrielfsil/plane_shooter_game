@@ -36,11 +36,21 @@ function keyboardUpdate() {
     keyboard.update();
 
     var speed = 0.5
+    if (airplane.position.x - camera.position.x < 80) {
+        if (keyboard.pressed("up")) airplane.translateY(-speed)
+    }
+    if (airplane.position.x - camera.position.x > 20) {
+        if (keyboard.pressed("down")) airplane.translateY(speed);
+    }
+    if (airplane.position.z - camera.position.z < 22) {
 
-    if (keyboard.pressed("up")) airplane.translateY(-speed);
-    if (keyboard.pressed("down")) airplane.translateY(speed);
-    if (keyboard.pressed("left")) airplane.translateZ(-speed);
-    if (keyboard.pressed("right")) airplane.translateZ(speed);
+        if (keyboard.pressed("right")) airplane.translateZ(speed);
+    }
+    if (airplane.position.z - camera.position.z > -22) {
+
+        if (keyboard.pressed("left")) airplane.translateZ(-speed)
+    }
+
 }
 
 var controls = new InfoBox();
