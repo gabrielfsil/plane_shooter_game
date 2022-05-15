@@ -3,7 +3,6 @@ import {
     initRenderer,
     initDefaultBasicLight,
     InfoBox,
-    createGroundPlaneWired,
     degreesToRadians
 } from "../libs/util/util.js";
 import KeyboardState from '../libs/util/KeyboardState.js'
@@ -31,13 +30,19 @@ function keyboardUpdate() {
 
     keyboard.update();
 
-    var speed = 0.3
+    var speed = 0.5
 
+    // if(airplane.position.x < (camera.position.y + 30)){
+
+    if (keyboard.pressed("up")) {
+        console.log(`${Math.sqrt(Math.pow(airplane.position.x - camera.position.x, 2))}`)
+        airplane.translateY(-speed)
+    };
+
+
+    if (keyboard.pressed("down")) airplane.translateY(speed);
     if (keyboard.pressed("left")) airplane.translateZ(-speed);
     if (keyboard.pressed("right")) airplane.translateZ(speed);
-    if (keyboard.pressed("up")) airplane.translateY(-speed);
-    if (keyboard.pressed("down")) airplane.translateY(speed);
-
 }
 
 var controls = new InfoBox();

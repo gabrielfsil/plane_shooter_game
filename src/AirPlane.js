@@ -3,6 +3,8 @@ import {
     degreesToRadians
 } from "../libs/util/util.js";
 
+
+
 export function createAirplane() {
     var airPlaneGeometry = new THREE.CylinderGeometry(0.5, 0.2, 5, 32);
     var airPlaneMaterial = new THREE.MeshLambertMaterial({ color: "rgb(200,0,0)" });
