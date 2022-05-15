@@ -30,7 +30,7 @@ var createLight = function() {
 var createLight = createLight();
 
 
-let plane = createGroundPlaneWired(2000, 200, 100, 10);
+let plane = createGroundPlaneWired(2000, 300, 100, 10);
 scene.add(plane);
 
 var airplane = createAirplane();
