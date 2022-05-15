@@ -3,9 +3,11 @@ import {
     initRenderer,
     initDefaultBasicLight,
     InfoBox,
-    createGroundPlaneWired,
     degreesToRadians
 } from "../libs/util/util.js";
+import KeyboardState from '../libs/util/KeyboardState.js'
+
+var keyboard = new KeyboardState();
 
 import { createAirplane } from './AirPlane.js';
 import { update } from './SceneManager.js';
@@ -36,6 +38,25 @@ scene.add(plane);
 var airplane = createAirplane();
 scene.add(airplane);
 
+function keyboardUpdate() {
+
+    keyboard.update();
+
+    var speed = 0.5
+
+    // if(airplane.position.x < (camera.position.y + 30)){
+
+    if (keyboard.pressed("up")) {
+        console.log(`${Math.sqrt(Math.pow(airplane.position.x - camera.position.x, 2))}`)
+        airplane.translateY(-speed)
+    };
+
+
+    if (keyboard.pressed("down")) airplane.translateY(speed);
+    if (keyboard.pressed("left")) airplane.translateZ(-speed);
+    if (keyboard.pressed("right")) airplane.translateZ(speed);
+}
+
 var controls = new InfoBox();
 controls.add("Plane Short");
 controls.show();
@@ -44,7 +65,8 @@ render();
 airplane.rotation.x += 0.05;
 airplane.rotation.z += 0.05;
 function render() {
-    update(camera, airplane, animationOn);
+    keyboardUpdate()
+    update(camera, airplane, scene, animationOn);
     requestAnimationFrame(render);
-    renderer.render(scene, camera) 
+    renderer.render(scene, camera)
 }
