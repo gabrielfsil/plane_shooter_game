@@ -44,8 +44,7 @@ export function update(camera, airplane, scene,light, animationOn) {
             camera.translateOnAxis(vectorDirection, speed)
             airplane.translateY(-speed)
             light.translateX(speed)
-            console.log(`${airplane.position.x.toFixed(2)}-${airplane.position.y.toFixed(2)}-${airplane.position.z.toFixed(2)}`)
-
+            
         } else {
             controlPlane++;
             if (controlPlane % 2 === 0) {

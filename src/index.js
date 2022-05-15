@@ -48,8 +48,6 @@ controls.add("Plane Short");
 controls.show();
 
 render();
-airplane.rotation.x += 0.05;
-airplane.rotation.z += 0.05;
 function render() {
     keyboardUpdate()
     update(camera, airplane, scene, light, animationOn);
