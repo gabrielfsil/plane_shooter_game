@@ -9,10 +9,13 @@ import KeyboardState from '../libs/util/KeyboardState.js';
 
 var shots = []
 
+var enimies = [];
+
 var keyboard = new KeyboardState();
 
 import { createAirplane } from './AirPlane.js';
 import { update } from './SceneManager.js';
+import { createEnimies } from './Enimies.js';
 import { createShot } from './Shot.js';
 
 var scene = new THREE.Scene();
@@ -79,13 +82,42 @@ function shotsManeger() {
     }
 }
 
+
+function genereteEnimies() {
+
+    setInterval(() => {
+        var enimie = createEnimies();
+        var speedEnimies = - Math.random() * 0.4 - 0.2
+        scene.add(enimie);
+        enimies.push({ enimie, speed: speedEnimies });
+    }, 3000)
+
+}
+
+genereteEnimies()
+
+
+function enimiesManager() {
+
+    for (var i = 0; i < enimies.length; i++) {
+
+        if (airplane.position.x - camera.position.x > 20) {
+
+            enimies[i].enimie.translateX(enimies[i].speed)
+        } else {
+            scene.remove(enimies[i].enimie);
+        }
+    }
+}
+
 var controls = new InfoBox();
 controls.add("Plane Short");
 controls.show();
 
 render();
 function render() {
-    keyboardUpdate();
+    keyboardUpdate()
+    enimiesManager()
     shotsManeger();
     update(camera, airplane, scene, light, animationOn);
     requestAnimationFrame(render);

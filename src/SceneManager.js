@@ -1,7 +1,10 @@
 import * as THREE from 'three';
 import { degreesToRadians } from '../libs/util/util.js';
 
+
 var speed = 0.05
+
+
 var vectorDirection = new THREE.Vector3(0, Math.cos(degreesToRadians(50)), -Math.sin(degreesToRadians(50)));
 var controlPlane = -1;
 
