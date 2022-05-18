@@ -33,7 +33,7 @@ export function createGroundPlane(x = 0, y = 0, z = -0.02) {
 let plane = createGroundPlane();
 let planeAux = createGroundPlane();
 
-export function update(camera, airplane, scene,light, animationOn, sphere) {
+export function update(camera, airplane, scene,light, animationOn) {
 
     if (controlPlane === -1) {
         scene.add(plane);
@@ -44,7 +44,6 @@ export function update(camera, airplane, scene,light, animationOn, sphere) {
             camera.translateOnAxis(vectorDirection, speed)
             airplane.translateY(-speed)
             light.translateX(speed)
-            sphere.translateX(speed)
             
         } else {
             controlPlane++;
