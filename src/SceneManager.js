@@ -1,22 +1,10 @@
 import * as THREE from 'three';
 import { degreesToRadians } from '../libs/util/util.js';
 
-const array = [];
-
-// for(let i = array.length; i < 8; i--) {
-//     const tam = array[i];
-// }
 
 var speed = 0.05
-var speedEnimies = -Math.floor(Math.random()*2)
-if(speedEnimies == 0){
-    speedEnimies = -0.50;
-}
-else if(speedEnimies >= -1){
-    speedEnimies = -0.30;
-}
 
-console.log(speedEnimies)
+
 var vectorDirection = new THREE.Vector3(0, Math.cos(degreesToRadians(50)), -Math.sin(degreesToRadians(50)));
 var controlPlane = -1;
 
@@ -48,7 +36,7 @@ export function createGroundPlane(x = 0, y = 0, z = -0.02) {
 let plane = createGroundPlane();
 let planeAux = createGroundPlane();
 
-export function update(camera, airplane, scene,light, animationOn, enimies) {
+export function update(camera, airplane, scene,light, animationOn) {
 
     if (controlPlane === -1) {
         scene.add(plane);
@@ -59,7 +47,6 @@ export function update(camera, airplane, scene,light, animationOn, enimies) {
             camera.translateOnAxis(vectorDirection, speed)
             airplane.translateY(-speed)
             light.translateX(speed)
-            enimies.translateX(speedEnimies)
             
         } else {
             controlPlane++;

@@ -1,7 +1,4 @@
 import * as THREE from 'three';
-import {
-    degreesToRadians
-} from "../libs/util/util.js";
 
 
 
@@ -11,7 +8,7 @@ export function createEnimies() {
     
     var enimies = new THREE.Mesh(enimiesGeometry, enimiesMaterial);
     
-    enimies.position.set(-Math.floor(Math.random()*100), 10, Math.floor(Math.random()*100));      
+    enimies.position.set(-Math.floor(Math.random()*26 - 26 ), 10, Math.floor(Math.random()*52 - 26 ));      
     
-    return enimies;
+    return enimies; 
 }

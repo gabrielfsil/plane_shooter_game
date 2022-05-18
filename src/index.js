@@ -7,6 +7,8 @@ import {
 } from "../libs/util/util.js";
 import KeyboardState from '../libs/util/KeyboardState.js'
 
+var enimies = [];
+
 var keyboard = new KeyboardState();
 
 import { createAirplane } from './AirPlane.js';
@@ -32,8 +34,7 @@ scene.add(light)
 var airplane = createAirplane();
 scene.add(airplane);
 
-var enimies = createEnimies();
-scene.add(enimies);
+
 
 function keyboardUpdate() {
 
@@ -57,6 +58,34 @@ function keyboardUpdate() {
 
 }
 
+
+function genereteEnimies() {
+
+    setInterval(() => {
+        var enimie = createEnimies();
+        var speedEnimies = - Math.random() * 0.4 - 0.2
+        scene.add(enimie);
+        enimies.push({ enimie, speed: speedEnimies });
+    }, 3000)
+
+}
+
+genereteEnimies()
+
+
+function enimiesManager() {
+
+    for (var i = 0; i < enimies.length; i++) {
+
+        if (airplane.position.x - camera.position.x > 20) {
+
+            enimies[i].enimie.translateX(enimies[i].speed)
+        } else {
+            scene.remove(enimies[i].enimie);
+        }
+    }
+}
+
 var controls = new InfoBox();
 controls.add("Plane Short");
 controls.show();
@@ -64,7 +93,8 @@ controls.show();
 render();
 function render() {
     keyboardUpdate()
-    update(camera, airplane, scene, light, animationOn, enimies);
+    enimiesManager()
+    update(camera, airplane, scene, light, animationOn);
     requestAnimationFrame(render);
     renderer.render(scene, camera)
 }
