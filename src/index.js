@@ -11,6 +11,7 @@ var keyboard = new KeyboardState();
 
 import { createAirplane } from './AirPlane.js';
 import { update } from './SceneManager.js';
+import { createEnimies } from './Enimies.js';
 
 var scene = new THREE.Scene();
 var renderer = initRenderer();
@@ -30,6 +31,9 @@ scene.add(light)
 
 var airplane = createAirplane();
 scene.add(airplane);
+
+var enimies = createEnimies();
+scene.add(enimies);
 
 function keyboardUpdate() {
 
@@ -60,7 +64,7 @@ controls.show();
 render();
 function render() {
     keyboardUpdate()
-    update(camera, airplane, scene, light, animationOn);
+    update(camera, airplane, scene, light, animationOn, enimies);
     requestAnimationFrame(render);
     renderer.render(scene, camera)
 }
