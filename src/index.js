@@ -5,12 +5,15 @@ import {
     InfoBox,
     degreesToRadians
 } from "../libs/util/util.js";
-import KeyboardState from '../libs/util/KeyboardState.js'
+import KeyboardState from '../libs/util/KeyboardState.js';
+
+var shots = []
 
 var keyboard = new KeyboardState();
 
 import { createAirplane } from './AirPlane.js';
 import { update } from './SceneManager.js';
+import { createShot } from './Shot.js';
 
 var scene = new THREE.Scene();
 var renderer = initRenderer();
@@ -31,26 +34,49 @@ scene.add(light)
 var airplane = createAirplane();
 scene.add(airplane);
 
+
+
 function keyboardUpdate() {
 
     keyboard.update();
 
-    var speed = 0.5
+    var speed = 0.5;
+
+
     if (airplane.position.x - camera.position.x < 80) {
         if (keyboard.pressed("up")) airplane.translateY(-speed)
     }
     if (airplane.position.x - camera.position.x > 20) {
         if (keyboard.pressed("down")) airplane.translateY(speed);
     }
-    if (airplane.position.z - camera.position.z < 22) {
+    if (airplane.position.z - camera.position.z < 28) {
 
         if (keyboard.pressed("right")) airplane.translateZ(speed);
     }
-    if (airplane.position.z - camera.position.z > -22) {
+    if (airplane.position.z - camera.position.z > -28) {
 
         if (keyboard.pressed("left")) airplane.translateZ(-speed)
     }
+    if (keyboard.down("space")) {
 
+        var sphere = createShot(airplane.position);
+        scene.add(sphere)
+        shots.push(sphere)
+
+    }
+
+}
+
+function shotsManeger() {
+    var speedShot = 1;
+
+    for (var i = 0; i < shots.length; i++) {
+        if (shots[i].position.x - camera.position.x < 120) {
+            shots[i].translateX(speedShot);
+        } else {
+            scene.remove(shots[i])
+        }
+    }
 }
 
 var controls = new InfoBox();
@@ -59,7 +85,8 @@ controls.show();
 
 render();
 function render() {
-    keyboardUpdate()
+    keyboardUpdate();
+    shotsManeger();
     update(camera, airplane, scene, light, animationOn);
     requestAnimationFrame(render);
     renderer.render(scene, camera)
