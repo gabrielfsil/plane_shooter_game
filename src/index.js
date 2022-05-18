@@ -11,6 +11,7 @@ var keyboard = new KeyboardState();
 
 import { createAirplane } from './AirPlane.js';
 import { update } from './SceneManager.js';
+import { createShot } from './Shot.js';
 
 var scene = new THREE.Scene();
 var renderer = initRenderer();
@@ -31,11 +32,17 @@ scene.add(light)
 var airplane = createAirplane();
 scene.add(airplane);
 
-function keyboardUpdate() {
+var sphere = createShot();
+scene.add(sphere)
 
+function keyboardUpdate() {
+    
     keyboard.update();
 
-    var speed = 0.5
+    var speed = 0.5;
+    var speedShot = 2;
+
+
     if (airplane.position.x - camera.position.x < 80) {
         if (keyboard.pressed("up")) airplane.translateY(-speed)
     }
@@ -50,6 +57,9 @@ function keyboardUpdate() {
 
         if (keyboard.pressed("left")) airplane.translateZ(-speed)
     }
+    if (keyboard.pressed("space")) {
+        sphere.translateX(speedShot)
+    }
 
 }
 
@@ -60,7 +70,7 @@ controls.show();
 render();
 function render() {
     keyboardUpdate()
-    update(camera, airplane, scene, light, animationOn);
+    update(camera, airplane, scene, light, animationOn, sphere);
     requestAnimationFrame(render);
     renderer.render(scene, camera)
 }
