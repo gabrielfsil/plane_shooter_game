@@ -16,3 +16,12 @@ export function createAirplane() {
 
     return airplane;
 }
+
+export function createCollisionAirplane(airplane) {
+    // cube Bounding Box
+    let cubeAirplane = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+    cubeAirplane.setFromObject(airplane);
+
+    return cubeAirplane
+
+}

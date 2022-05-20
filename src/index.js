@@ -13,7 +13,7 @@ var enimies = [];
 
 var keyboard = new KeyboardState();
 
-import { createAirplane } from './AirPlane.js';
+import { createAirplane, createCollisionAirplane } from './AirPlane.js';
 import { update } from './SceneManager.js';
 import { createEnimies } from './Enimies.js';
 import { createShot } from './Shot.js';
@@ -36,6 +36,14 @@ scene.add(light)
 
 var airplane = createAirplane();
 scene.add(airplane);
+
+var cubeAirplane = createCollisionAirplane();
+
+function animate() {
+    cubeAirplane.copy(airplane.geometry.boundingBox).applyMatrix4(airplane.matrixWorld);
+    console.log(cubeAirplane)
+
+}
 
 
 
@@ -116,8 +124,9 @@ controls.show();
 
 render();
 function render() {
-    keyboardUpdate()
-    enimiesManager()
+    keyboardUpdate();
+    enimiesManager();
+    animate();
     shotsManeger();
     update(camera, airplane, scene, light, animationOn);
     requestAnimationFrame(render);
