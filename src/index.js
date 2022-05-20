@@ -8,8 +8,9 @@ import {
 import KeyboardState from '../libs/util/KeyboardState.js';
 
 var shots = []
-
 var enimies = [];
+var boxEnimies = []
+var sphereShots = []
 
 var keyboard = new KeyboardState();
 
@@ -39,6 +40,27 @@ scene.add(airplane);
 
 
 
+export function createBoundingBox(box) {
+
+    let boundingBox = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+    boundingBox.setFromObject(box);
+
+    return boundingBox
+
+}
+
+export function createBoundingSpheres(sphere) {
+
+    let boundingSpheres = new THREE.Sphere(sphere.position, 0.6)
+
+    return boundingSpheres
+
+}
+
+
+var boxAirplane = createBoundingBox(airplane);
+
+
 function keyboardUpdate() {
 
     keyboard.update();
@@ -63,8 +85,11 @@ function keyboardUpdate() {
     if (keyboard.down("space")) {
 
         var sphere = createShot(airplane.position);
+        var boundingSphere = createBoundingSpheres(sphere);
+        // console.log(boundingSphere)
         scene.add(sphere)
         shots.push(sphere)
+        sphereShots.push(boundingSphere);
 
     }
 
@@ -77,7 +102,9 @@ function shotsManeger() {
         if (shots[i].position.x - camera.position.x < 120) {
             shots[i].translateX(speedShot);
         } else {
-            scene.remove(shots[i])
+            scene.remove(shots[i]);
+            shots.splice(i, 1);
+            sphereShots.splice(i, 1);
         }
     }
 }
@@ -86,9 +113,11 @@ function shotsManeger() {
 function genereteEnimies() {
 
     setInterval(() => {
-        var enimie = createEnimies();
+        var enimie = createEnimies(camera);
+        var boundingBox = createBoundingBox(enimie);
         var speedEnimies = - Math.random() * 0.4 - 0.2
         scene.add(enimie);
+        boxEnimies.push(boundingBox);
         enimies.push({ enimie, speed: speedEnimies });
     }, 3000)
 
@@ -106,8 +135,94 @@ function enimiesManager() {
             enimies[i].enimie.translateX(enimies[i].speed)
         } else {
             scene.remove(enimies[i].enimie);
+            enimies.splice(i, 1)
+            boxEnimies.splice(i, 1)
         }
     }
+}
+
+
+
+function animate() {
+
+    boxAirplane.copy(airplane.geometry.boundingBox).applyMatrix4(airplane.matrixWorld);
+
+    for (var i = 0; i < boxEnimies.length; i++) {
+
+        boxEnimies[i].copy(enimies[i].enimie.geometry.boundingBox).applyMatrix4(enimies[i].enimie.matrixWorld)
+
+        if (boxEnimies[i].intersectsBox(boxAirplane)) {
+
+            console.log("Game Over");
+
+        }
+
+    }
+    var speedShot = 1;
+
+
+    if (shots.length > 0) {
+        for (var i = 0; i < sphereShots.length; i++) {
+
+            if (shots[i].position.x - camera.position.x < 120) {
+                if (shots[i].geometry.boundingSphere === null) {
+                    shots[i].geometry.computeBoundingSphere();
+                } else {
+                    sphereShots[i].copy(shots[i].geometry.boundingSphere).applyMatrix4(shots[i].matrixWorld)
+                }
+                shots[i].translateX(speedShot);
+
+            } else {
+
+                scene.remove(shots[i]);
+                sphereShots.splice(i, 1);
+                shots.splice(i, 1);
+            }
+
+        }
+    }
+
+}
+
+
+function collisionManager() {
+
+    var removeEnimies = [];
+    var removeShots = [];
+    for (var i = 0; i < boxEnimies.length; i++) {
+
+        if (boxEnimies[i].intersectsBox(boxAirplane)) {
+
+            console.log("Game Over");
+
+        }
+
+        for (var j = 0; j < sphereShots.length; j++) {
+
+            if (sphereShots[j]) {
+                if (boxEnimies[i].intersectsSphere(sphereShots[j])) {
+
+                    removeEnimies.push(i);
+                    removeShots.push(j);
+
+                }
+
+            }
+        }
+    }
+
+    for (var i = 0; i < removeEnimies.length; i++) {
+        scene.remove(enimies[removeEnimies[i]].enimie);
+        boxEnimies.splice(removeEnimies[i], 1);
+        enimies.splice(removeEnimies[i], 1);
+    }
+
+    for (var i = 0; i < removeShots.length; i++) {
+        scene.remove(shots[removeShots[i]]);
+        boxEnimies.splice(removeShots[i], 1);
+        enimies.splice(removeShots[i], 1);
+    }
+
 }
 
 var controls = new InfoBox();
@@ -116,9 +231,11 @@ controls.show();
 
 render();
 function render() {
-    keyboardUpdate()
-    enimiesManager()
-    shotsManeger();
+    collisionManager();
+    keyboardUpdate();
+    enimiesManager();
+    animate();
+    // shotsManeger();
     update(camera, airplane, scene, light, animationOn);
     requestAnimationFrame(render);
     renderer.render(scene, camera)

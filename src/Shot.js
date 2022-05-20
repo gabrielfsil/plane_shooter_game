@@ -8,5 +8,9 @@ export function createShot(position) {
 
     sphere.position.set(position.x, position.y, position.z);
 
+    // sphere Bouding Box
+    let sphereShot = new THREE.Sphere(sphere.position, 0.6)
+
+
     return sphere
 }
