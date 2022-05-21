@@ -11,6 +11,7 @@ var shots = []
 var enimies = [];
 var boxEnimies = []
 var sphereShots = [];
+
 var animationOn = true;
 
 var keyboard = new KeyboardState();
@@ -34,6 +35,8 @@ var light = new THREE.SpotLight(0xfff);
 light.position.set(-250, 40, 0);
 light.castShadow = true;
 scene.add(light)
+
+
 
 
 var airplane = createAirplane();
@@ -140,22 +143,12 @@ function enimiesManager() {
 }
 
 
-function animateAirplaneCollision(indexEnimies) {
+function gameOver(indexEnimies) {
     animation1();
-    console.log("Game Over");
     clearInterval(loopEnimies);
     animationOn = false;
 
-    function animation1(){
-        airplane.material.transparent = true;
-        airplane.material.opacity = 0.5;
-        airplane.material.color = new THREE.Color(Math.random() * 0xffffff); 
-    }
-    function animation2(){
-        sphere.material.transparent = true;
-        sphere.material.opacity = 0.5;
-        sphere.material.color = new THREE.Color(0xffffff);
-    }
+
 
     setTimeout(() => {
 
@@ -165,7 +158,36 @@ function animateAirplaneCollision(indexEnimies) {
         boxEnimies.splice(indexEnimies, 1);
 
     }, 3000);
-    
+
+}
+
+
+function animation1(enimie) {
+    if (!animationOn) {
+        enimie.rotation.y += 0.05
+        airplane.material.transparent = true;
+        airplane.material.opacity = 0.5;
+        airplane.material.color = new THREE.Color(Math.random() * 0xffffff);
+    }
+}
+
+function animation2(x, y, z, size) {
+
+    if (size < 10) {
+        var bulbGeometry = new THREE.SphereGeometry(0.02, 16, 8);
+        var bulbLight = new THREE.PointLight(0x2b88a1, 1, 100, 2);
+        var bulbMat = new THREE.MeshStandardMaterial({
+            emissive: 0xfd9000,
+            emissiveIntensity: 10,
+            color: 0x000000
+        });
+        bulbLight.add(new THREE.Mesh(bulbGeometry, bulbMat));
+        bulbLight.castShadow = true;
+        bulbLight.scale.setScalar(size)
+        bulbLight.position.set(x, y, z);
+        scene.add(bulbLight);
+    }
+
 }
 
 
@@ -181,7 +203,7 @@ function animate() {
 
             if (boxEnimies[i].intersectsBox(boxAirplane)) {
 
-                animateAirplaneCollision(i);
+                gameOver(i);
 
             }
 
@@ -209,15 +231,24 @@ function animate() {
 
             }
         }
+    } else {
+
+        for (var i = 0; i < boxEnimies.length; i++) {
+
+            if (boxEnimies[i].intersectsBox(boxAirplane)) {
+                animation1(enimies[i].enimie)
+            }
+
+        }
     }
 
 }
 
 
 function collisionManager() {
-
     var removeEnimies = [];
     var removeShots = [];
+
     for (var i = 0; i < boxEnimies.length; i++) {
 
         for (var j = 0; j < sphereShots.length; j++) {
@@ -225,6 +256,7 @@ function collisionManager() {
             if (sphereShots[j]) {
                 if (boxEnimies[i].intersectsSphere(sphereShots[j])) {
 
+                    // animation2(enimies[i].enimie.position.x, enimies[i].enimie.position.z, enimies[i].enimie.position.z, 0.02);
                     removeEnimies.push(i);
                     removeShots.push(j);
 
@@ -260,7 +292,6 @@ controls.show();
 
 render();
 function render() {
-
     collisionManager();
     keyboardUpdate();
     enimiesManager();
