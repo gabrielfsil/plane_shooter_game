@@ -141,9 +141,21 @@ function enimiesManager() {
 
 
 function animateAirplaneCollision(indexEnimies) {
+    animation1();
     console.log("Game Over");
     clearInterval(loopEnimies);
     animationOn = false;
+
+    function animation1(){
+        airplane.material.transparent = true;
+        airplane.material.opacity = 0.5;
+        airplane.material.color = new THREE.Color(Math.random() * 0xffffff); 
+    }
+    function animation2(){
+        sphere.material.transparent = true;
+        sphere.material.opacity = 0.5;
+        sphere.material.color = new THREE.Color(0xffffff);
+    }
 
     setTimeout(() => {
 
