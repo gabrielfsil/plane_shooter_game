@@ -187,12 +187,12 @@ function animation2(x, y, z, size) {
     var lightInterval = setInterval(() => {
         bulbLight.scale.setScalar(size)
         size += 1
-    })
+    }, 100);
 
     setTimeout(() => {
         clearInterval(lightInterval);
         scene.remove(bulbLight);
-    }, 100)
+    }, 300)
 
 }
 
