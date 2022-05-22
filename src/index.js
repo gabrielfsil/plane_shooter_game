@@ -14,6 +14,7 @@ var sphereShots = [];
 
 var animationOn = true;
 
+
 var keyboard = new KeyboardState();
 
 import { createAirplane } from './AirPlane.js';
@@ -63,7 +64,8 @@ function initialState() {
     airplane.position.set(airplane.position.x, 10, 0);
     animationOn = true;
     light.position.set(light.position.x, 40, 0);
-    loopEnimies = genereteEnimies()
+    loopEnimies = genereteEnimies();
+    menu.style.display = "none"
 }
 
 function createBoundingBox(box) {
@@ -130,7 +132,8 @@ function enimiesManager() {
 
     for (var i = 0; i < enimies.length; i++) {
 
-        if (airplane.position.x - camera.position.x > 20) {
+        if (enimies[i].enimie.position.x - camera.position.x > 20) {
+
             if (animationOn) {
                 enimies[i].enimie.translateX(enimies[i].speed)
             }
@@ -165,28 +168,31 @@ function gameOver(indexEnimies) {
 function animation1(enimie) {
     if (!animationOn) {
         enimie.rotation.y += 0.05
-        airplane.material.transparent = true;
-        airplane.material.opacity = 0.5;
-        airplane.material.color = new THREE.Color(Math.random() * 0xffffff);
     }
 }
 
 function animation2(x, y, z, size) {
+    var bulbGeometry = new THREE.SphereGeometry(0.5, 16, 8);
+    var bulbLight = new THREE.PointLight(0x2b88a1, 1, 100, 2);
+    var bulbMat = new THREE.MeshStandardMaterial({
+        emissive: 0xfd9000,
+        emissiveIntensity: 10,
+        color: 0x000000
+    });
+    bulbLight.add(new THREE.Mesh(bulbGeometry, bulbMat));
+    bulbLight.castShadow = true;
+    bulbLight.position.set(x, y, z);
+    scene.add(bulbLight);
 
-    if (size < 10) {
-        var bulbGeometry = new THREE.SphereGeometry(0.02, 16, 8);
-        var bulbLight = new THREE.PointLight(0x2b88a1, 1, 100, 2);
-        var bulbMat = new THREE.MeshStandardMaterial({
-            emissive: 0xfd9000,
-            emissiveIntensity: 10,
-            color: 0x000000
-        });
-        bulbLight.add(new THREE.Mesh(bulbGeometry, bulbMat));
-        bulbLight.castShadow = true;
+    var lightInterval = setInterval(() => {
         bulbLight.scale.setScalar(size)
-        bulbLight.position.set(x, y, z);
-        scene.add(bulbLight);
-    }
+        size += 1
+    })
+
+    setTimeout(() => {
+        clearInterval(lightInterval);
+        scene.remove(bulbLight);
+    }, 100)
 
 }
 
@@ -256,7 +262,7 @@ function collisionManager() {
             if (sphereShots[j]) {
                 if (boxEnimies[i].intersectsSphere(sphereShots[j])) {
 
-                    // animation2(enimies[i].enimie.position.x, enimies[i].enimie.position.z, enimies[i].enimie.position.z, 0.02);
+                    animation2(enimies[i].enimie.position.x, enimies[i].enimie.position.y, enimies[i].enimie.position.z, 0.02);
                     removeEnimies.push(i);
                     removeShots.push(j);
 
@@ -274,8 +280,8 @@ function collisionManager() {
 
     for (var i = 0; i < removeShots.length; i++) {
         scene.remove(shots[removeShots[i]]);
-        boxEnimies.splice(removeShots[i], 1);
-        enimies.splice(removeShots[i], 1);
+        sphereShots.splice(removeShots[i], 1);
+        shots.splice(removeShots[i], 1);
     }
 
 }

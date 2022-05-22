@@ -106,9 +106,8 @@ export function MenuGame(initialState) {
     button.style.border = "none";
     button.style.cursor = "pointer"
     button.onclick = () => {
-        console.log("Reiniciar jogo")
+        
         initialState();
-        contentBox.style.display = "none"
     }
 
     contentBox.appendChild(button);
