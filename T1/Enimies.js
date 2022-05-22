@@ -3,7 +3,7 @@ import * as THREE from 'three';
 
 
 export function createEnimies(camera) {
-    var enimiesGeometry = new THREE.BoxGeometry(5, 5, 3);
+    var enimiesGeometry = new THREE.BoxGeometry(6, 6, 6);
     var enimiesMaterial = new THREE.MeshLambertMaterial({ color: "rgb(0,100,100)" });
 
     var enimies = new THREE.Mesh(enimiesGeometry, enimiesMaterial);
