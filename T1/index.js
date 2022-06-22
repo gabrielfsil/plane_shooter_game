@@ -8,7 +8,9 @@ import {
 import KeyboardState from '../libs/util/KeyboardState.js';
 
 var shots = []
+var missiles = []
 var enimies = [];
+var enemiesGround = [];
 var boxEnimies = []
 var sphereShots = [];
 
@@ -21,6 +23,7 @@ import { createAirplane } from './AirPlane.js';
 import { update, MenuGame } from './SceneManager.js';
 import { createEnimies } from './Enimies.js';
 import { createShot } from './Shot.js';
+import { EnemiesGround } from './EnemiesGround.js';
 
 var scene = new THREE.Scene();
 var renderer = initRenderer();
@@ -46,18 +49,51 @@ scene.add(airplane);
 
 function genereteEnimies() {
 
+    // return setInterval(() => {
+    //     var enimie = createEnimies(camera);
+    //     var boundingBox = createBoundingBox(enimie);
+    //     var speedEnimies = - Math.random() * 0.4 - 0.2
+    //     scene.add(enimie);
+    //     boxEnimies.push(boundingBox);
+    //     enimies.push({ enimie, speed: speedEnimies });
+    // }, 3000)
+
+
+}
+
+function genereteEnemiesGround() {
     return setInterval(() => {
-        var enimie = createEnimies(camera);
-        var boundingBox = createBoundingBox(enimie);
-        var speedEnimies = - Math.random() * 0.4 - 0.2
-        scene.add(enimie);
-        boxEnimies.push(boundingBox);
-        enimies.push({ enimie, speed: speedEnimies });
-    }, 3000)
+        var enimie = new EnemiesGround(camera);
+        scene.add(enimie.enemieGround);
+        enemiesGround.push(enimie);
+    }, 2000)
+}
+
+function genereteMissiles(enemie) {
+
+    // let missile = enemie.shot(airplane.position.x, airplane.position.y, airplane.position.z);
+
+
+    // console.log(airplane.position.x, airplane.position.y, airplane.position.z)
+    // console.log(missile.position.x, missile.position.y, missile.position.z)
+
+    return setInterval(() => {
+        if (enemiesGround.length > 0) {
+
+            let index = Math.floor(Math.random() + enemiesGround.length - 1);
+            
+            let missile = enemiesGround[index].shot(airplane.position.x, airplane.position.y, airplane.position.z);
+            missiles.push(missile)
+            scene.add(missile.missile);
+        }
+
+    }, 2000)
 
 }
 
 var loopEnimies = genereteEnimies()
+var loopEnemiesGround = genereteEnemiesGround()
+var loopMissiles = genereteMissiles();
 
 function initialState() {
     camera.position.set(camera.position.x, 40, 0);
@@ -126,7 +162,20 @@ function keyboardUpdate() {
 
 }
 
+function missilesManager() {
 
+    for (var i = 0; i < missiles.length; i++) {
+
+        if ((airplane.position.x - camera.position.x < 80) && (airplane.position.x - camera.position.x > 20) && (missiles[i].missile.position.z - camera.position.z < 35) && (missiles[i].missile.position.z - camera.position.z > -35)) {
+            missiles[i].moviment()
+        } else {
+            scene.remove(missiles[i].missile);
+            enemiesGround.splice(i, 1)
+        }
+    }
+
+
+}
 
 function enimiesManager() {
 
@@ -143,12 +192,23 @@ function enimiesManager() {
             boxEnimies.splice(i, 1)
         }
     }
+
+    for (var i = 0; i < enemiesGround.length; i++) {
+
+        if (!(enemiesGround[i].enemieGround.position.x - camera.position.x > 20)) {
+
+            scene.remove(enemiesGround[i].enemieGround);
+            enemiesGround.splice(i, 1)
+        }
+    }
 }
 
 
 function gameOver(indexEnimies) {
     animation1();
     clearInterval(loopEnimies);
+    clearInterval(loopEnemiesGround);
+    clearInterval(loopMissiles);
     animationOn = false;
 
 
@@ -172,27 +232,8 @@ function animation1(enimie) {
 }
 
 function animation2(x, y, z, size) {
-    var bulbGeometry = new THREE.SphereGeometry(0.5, 16, 8);
-    var bulbLight = new THREE.PointLight(0x2b88a1, 1, 100, 2);
-    var bulbMat = new THREE.MeshStandardMaterial({
-        emissive: 0xfd9000,
-        emissiveIntensity: 10,
-        color: 0x000000
-    });
-    bulbLight.add(new THREE.Mesh(bulbGeometry, bulbMat));
-    bulbLight.castShadow = true;
-    bulbLight.position.set(x, y, z);
-    scene.add(bulbLight);
 
-    var lightInterval = setInterval(() => {
-        bulbLight.scale.setScalar(size)
-        size += 1
-    }, 100);
 
-    setTimeout(() => {
-        clearInterval(lightInterval);
-        scene.remove(bulbLight);
-    }, 300)
 
 }
 
@@ -301,6 +342,7 @@ function render() {
     collisionManager();
     keyboardUpdate();
     enimiesManager();
+    missilesManager();
     animate();
     update(camera, airplane, scene, light, animationOn);
     requestAnimationFrame(render);
