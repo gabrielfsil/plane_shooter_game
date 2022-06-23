@@ -18,12 +18,10 @@ class EnemiesGround {
 
     shot(x, y, z) {
 
-        let missile = new Missile(x, y, z);
+        let missile = new Missile([this.enemieGround.position.x, this.enemieGround.position.y, this.enemieGround.position.z], [x, y, z]);
 
         missile.missile.position.set(this.enemieGround.position.x, this.enemieGround.position.y, this.enemieGround.position.z)
 
-        console.log(x, y, z)
-        console.log(this.enemieGround.position.x, this.enemieGround.position.y, this.enemieGround.position.z)
         return missile
     }
 }
