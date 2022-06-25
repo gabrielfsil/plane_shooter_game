@@ -3,6 +3,7 @@ import {
     degreesToRadians
 } from "../libs/util/util.js";
 import KeyboardState from '../libs/util/KeyboardState.js';
+import { createShot } from './Shot.js';
 
 
 var keyboard = new KeyboardState();
@@ -26,6 +27,10 @@ class Airplane {
 
         this.object.position.set(-170, 10, 0);
         // this.object.rotateZ(degreesToRadians(90));
+        
+        this.cadence = setInterval(() => {
+            this.enabled = true
+        }, 500);
 
         return this;
     }
@@ -52,6 +57,8 @@ class Airplane {
 
                 if (keyboard.pressed("left")) this.object.translateZ(-speed)
             }
+
+
             // setInterval(() => {
             //     if (keyboard.pressed("ctrl")) {
             //         var sphere = createShot(this.object.position);
@@ -66,7 +73,24 @@ class Airplane {
 
     }
 
+    shot(scene, shots, sphereShots) {
 
+        if (keyboard.down("space") || keyboard.pressed("ctrl")) {
+
+            if (this.enabled) {
+                this.enabled = false
+                var sphere = createShot(this.object.position);
+                var boundingSphere = createBoundingSpheres(sphere);
+
+                scene.add(sphere)
+                shots.push(sphere)
+                sphereShots.push(boundingSphere);
+            }
+        }
+
+
+
+    }
 }
 
 export { Airplane }

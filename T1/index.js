@@ -144,28 +144,7 @@ function animation1(enimie) {
 }
 
 function animation2(x, y, z, size) {
-    var bulbGeometry = new THREE.SphereGeometry(0.5, 16, 8);
-    var bulbLight = new THREE.PointLight(0x2b88a1, 1, 100, 2);
-    var bulbMat = new THREE.MeshStandardMaterial({
-        emissive: 0xfd9000,
-        emissiveIntensity: 10,
-        color: 0x000000
-    });
-    bulbLight.add(new THREE.Mesh(bulbGeometry, bulbMat));
-    bulbLight.castShadow = true;
-    bulbLight.position.set(x, y, z);
-    scene.add(bulbLight);
-
-    var lightInterval = setInterval(() => {
-        bulbLight.scale.setScalar(size)
-        size += 1
-    }, 100);
-
-    setTimeout(() => {
-        clearInterval(lightInterval);
-        scene.remove(bulbLight);
-    }, 300)
-
+     
 }
 
 
@@ -294,6 +273,7 @@ function render() {
     collisionManager();
 
     airplane.moviment(animationOn, camera)
+    airplane.shot(scene, shots, sphereShots)
 
     enimiesManager();
     animate();
