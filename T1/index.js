@@ -40,7 +40,7 @@ scene.add(light)
 
 
 
-var airplane = createAirplane();
+var airplane = createAirplane(scene);
 scene.add(airplane);
 
 
@@ -86,6 +86,7 @@ function createBoundingSpheres(sphere) {
 }
 
 
+
 var boxAirplane = createBoundingBox(airplane);
 
 var menu = MenuGame(initialState)
@@ -112,15 +113,16 @@ function keyboardUpdate() {
 
             if (keyboard.pressed("left")) airplane.translateZ(-speed)
         }
-        if (keyboard.down("space") || keyboard.down("ctrl")) {
+        setInterval(() => {
+            if (keyboard.down("ctrl")) {
+                var sphere = createShot(airplane.position);
+                var boundingSphere = createBoundingSpheres(sphere);
+                scene.add(sphere)
+                shots.push(sphere)
+                sphereShots.push(boundingSphere);
+            }
 
-            var sphere = createShot(airplane.position);
-            var boundingSphere = createBoundingSpheres(sphere);
-            scene.add(sphere)
-            shots.push(sphere)
-            sphereShots.push(boundingSphere);
-
-        }
+        }, 500)
     }
 
 
@@ -144,6 +146,12 @@ function enimiesManager() {
         }
     }
 }
+
+var sphere = createShot(enimies.position);
+var boundingSphere = createBoundingSpheres(sphere);
+scene.add(sphere)
+shots.push(sphere)
+sphereShots.push(boundingSphere);
 
 
 function gameOver(indexEnimies) {
@@ -286,6 +294,27 @@ function collisionManager() {
 
 }
 
+// var enemyClass = [enemyDiagonal, enemyHorizontal, enemyVertical, enemyArco, enemyTerra, airplane]
+// var enemyHp = [1,1,1,1,1,5]
+// var enemyStrenght = [1,1,1,1,2,1]
+var airplaneIsDead = false
+var airplaneHitPoints
+var Strenght = 1
+
+
+
+function fight() {
+    if (airplaneHitPoints > 0) {
+        airplaneHitPoints = airplaneHitPoints - Strenght
+        document.getElementById("airplaneHp").innerHTML = airplaneHitPoints
+    }
+    else if (!airplaneIsDead) {
+        airplaneHitPoints = 0
+        airplaneIsDead = true
+        document.getElementById("airplaneHp").innerHTML = airplaneHitPoints
+    }
+}
+
 var controls = new InfoBox();
 controls.add("Plane Short");
 controls.addParagraph();
@@ -302,6 +331,7 @@ function render() {
     keyboardUpdate();
     enimiesManager();
     animate();
+    fight();
     update(camera, airplane, scene, light, animationOn);
     requestAnimationFrame(render);
     renderer.render(scene, camera)
