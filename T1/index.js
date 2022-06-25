@@ -6,6 +6,7 @@ import {
     degreesToRadians
 } from "../libs/util/util.js";
 import KeyboardState from '../libs/util/KeyboardState.js';
+import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js'
 
 var shots = []
 var enimies = [];
@@ -17,7 +18,7 @@ var animationOn = true;
 
 var keyboard = new KeyboardState();
 
-import { createAirplane } from './AirPlane.js';
+import { Airplane } from './AirPlane.js';
 import { update, MenuGame } from './SceneManager.js';
 import { createEnimies } from './Enimies.js';
 import { createShot } from './Shot.js';
@@ -38,10 +39,30 @@ light.castShadow = true;
 scene.add(light)
 
 
+function createBoundingBox(box) {
+
+    let boundingBox = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+
+    boundingBox.setFromObject(box);
 
 
-var airplane = createAirplane(scene);
-scene.add(airplane);
+    return boundingBox
+
+}
+
+
+var airplane = new Airplane();
+const gltfLoader = new GLTFLoader();
+
+var boxAirplane = createBoundingBox(airplane.object);
+
+gltfLoader.load('./assets/airplane.glb', (gltfScene) => {
+
+    gltfScene.scene.rotateY(degreesToRadians(180));
+    airplane.object.add(gltfScene.scene);
+});
+
+scene.add(airplane.object);
 
 
 function genereteEnimies() {
@@ -61,72 +82,15 @@ var loopEnimies = genereteEnimies()
 
 function initialState() {
     camera.position.set(camera.position.x, 40, 0);
-    airplane.position.set(airplane.position.x, 10, 0);
+    airplane.object.position.set(airplane.object.position.x, 10, 0);
     animationOn = true;
     light.position.set(light.position.x, 40, 0);
     loopEnimies = genereteEnimies();
     menu.style.display = "none"
 }
 
-function createBoundingBox(box) {
-
-    let boundingBox = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-    boundingBox.setFromObject(box);
-
-    return boundingBox
-
-}
-
-function createBoundingSpheres(sphere) {
-
-    let boundingSpheres = new THREE.Sphere(sphere.position, 0.6)
-
-    return boundingSpheres
-
-}
-
-
-
-var boxAirplane = createBoundingBox(airplane);
-
 var menu = MenuGame(initialState)
 
-function keyboardUpdate() {
-
-    keyboard.update();
-
-    var speed = 0.8;
-
-    if (animationOn) {
-
-        if (airplane.position.x - camera.position.x < 80) {
-            if (keyboard.pressed("up")) airplane.translateY(-speed)
-        }
-        if (airplane.position.x - camera.position.x > 20) {
-            if (keyboard.pressed("down")) airplane.translateY(speed);
-        }
-        if (airplane.position.z - camera.position.z < 28) {
-
-            if (keyboard.pressed("right")) airplane.translateZ(speed);
-        }
-        if (airplane.position.z - camera.position.z > -28) {
-
-            if (keyboard.pressed("left")) airplane.translateZ(-speed)
-        }
-        setInterval(() => {
-            if (keyboard.down("ctrl")) {
-                var sphere = createShot(airplane.position);
-                var boundingSphere = createBoundingSpheres(sphere);
-                scene.add(sphere)
-                shots.push(sphere)
-                sphereShots.push(boundingSphere);
-            }
-
-        }, 500)
-    }
-
-
-}
 
 
 
@@ -147,11 +111,11 @@ function enimiesManager() {
     }
 }
 
-var sphere = createShot(enimies.position);
-var boundingSphere = createBoundingSpheres(sphere);
-scene.add(sphere)
-shots.push(sphere)
-sphereShots.push(boundingSphere);
+// var sphere = createShot(enimies.position);
+// var boundingSphere = createBoundingSpheres(sphere);
+// scene.add(sphere)
+// shots.push(sphere)
+// sphereShots.push(boundingSphere);
 
 
 function gameOver(indexEnimies) {
@@ -209,7 +173,7 @@ function animate() {
 
     if (animationOn) {
 
-        boxAirplane.copy(airplane.geometry.boundingBox).applyMatrix4(airplane.matrixWorld);
+        boxAirplane.copy(airplane.object.geometry.boundingBox).applyMatrix4(airplane.object.matrixWorld);
 
         for (var i = 0; i < boxEnimies.length; i++) {
 
@@ -328,11 +292,13 @@ controls.show();
 render();
 function render() {
     collisionManager();
-    keyboardUpdate();
+
+    airplane.moviment(animationOn, camera)
+
     enimiesManager();
     animate();
-    fight();
-    update(camera, airplane, scene, light, animationOn);
+    // fight();
+    update(camera, airplane.object, scene, light, animationOn);
     requestAnimationFrame(render);
     renderer.render(scene, camera)
 }
