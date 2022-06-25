@@ -1,11 +1,17 @@
 import * as THREE from 'three';
+import Stats from '../build/jsm/libs/stats.module.js';
 import {
     initRenderer,
-    initDefaultBasicLight,
     InfoBox,
     degreesToRadians
 } from "../libs/util/util.js";
 import KeyboardState from '../libs/util/KeyboardState.js';
+
+import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js';
+
+const container = document.getElementById( 'container' );
+const stats = new Stats();
+container.appendChild( stats.dom );
 
 var shots = []
 var missiles = []
@@ -31,15 +37,26 @@ var camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHei
 camera.position.set(-200, 40, 0);
 camera.rotateY(degreesToRadians(-90));
 camera.rotateX(degreesToRadians(-40));
-initDefaultBasicLight(scene);
 
+// Faça-se a luz
+let dirLight = new THREE.DirectionalLight("rgb(255,255,255)")
 
+dirLight.position.copy(new THREE.Vector3(-20, 40, 0));
 
-var light = new THREE.SpotLight(0xfff);
-light.position.set(-250, 40, 0);
-light.castShadow = true;
-scene.add(light)
+dirLight.castShadow = true;
 
+dirLight.shadow.mapSize.width = 512
+dirLight.shadow.mapSize.height = 512
+dirLight.shadow.camera.near = 0.1
+dirLight.shadow.camera.far = 200
+dirLight.shadow.camera.left = -20
+dirLight.shadow.camera.right = 20
+dirLight.shadow.camera.bottom = -20
+dirLight.shadow.camera.top = 20
+
+scene.add(dirLight);
+
+let loader = new GLTFLoader();
 
 
 
@@ -64,24 +81,30 @@ function genereteEnimies() {
 function genereteEnemiesGround() {
     return setInterval(() => {
         var enimie = new EnemiesGround(camera);
+        loader.load("./assets/toon_tank.glb", function (gltf) {
+            let object = gltf.scene;
+            object.traverse(function (child) {
+                if (child) {
+                    child.castShadow = true;
+                }
+            })
+            object.rotateY(degreesToRadians(-90))
+            enimie.enemieGround.add(object)
+        }, null, null);
+
         scene.add(enimie.enemieGround);
         enemiesGround.push(enimie);
+
     }, 2000)
 }
 
 function genereteMissiles(enemie) {
 
-    // let missile = enemie.shot(airplane.position.x, airplane.position.y, airplane.position.z);
-
-
-    // console.log(airplane.position.x, airplane.position.y, airplane.position.z)
-    // console.log(missile.position.x, missile.position.y, missile.position.z)
-
     return setInterval(() => {
         if (enemiesGround.length > 0) {
 
             let index = Math.floor(Math.random() + enemiesGround.length - 1);
-            
+
             let missile = enemiesGround[index].shot(airplane.position.x, airplane.position.y, airplane.position.z);
             missiles.push(missile)
             scene.add(missile.missile);
@@ -339,12 +362,14 @@ controls.show();
 
 render();
 function render() {
+    stats.update();
     collisionManager();
     keyboardUpdate();
     enimiesManager();
     missilesManager();
     animate();
-    update(camera, airplane, scene, light, animationOn);
+    update(camera, airplane, scene, dirLight, animationOn);
     requestAnimationFrame(render);
-    renderer.render(scene, camera)
+    renderer.render(scene, camera);
+ 
 }

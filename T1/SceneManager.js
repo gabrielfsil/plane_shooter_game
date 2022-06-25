@@ -6,13 +6,14 @@ var speed = 0.3
 
 
 var vectorDirection = new THREE.Vector3(0, Math.cos(degreesToRadians(50)), -Math.sin(degreesToRadians(50)));
+var vectorDirection = new THREE.Vector3(0, Math.cos(degreesToRadians(50)), -Math.sin(degreesToRadians(50)));
 var controlPlane = -1;
 
 export function createGroundPlane(x = 0, y = 0, z = -0.02) {
-    let gcolor = "rgb(60, 30, 150)";
+    let gcolor = "rgb(86, 80, 71)";
 
 
-    var planeGeometry = new THREE.PlaneGeometry(400, 300, 20, 10);
+    var planeGeometry = new THREE.PlaneGeometry(400, 300, 10, 10);
     planeGeometry.translate(x, y, z);
     var planeMaterial = new THREE.MeshPhongMaterial({
         color: gcolor,
@@ -31,6 +32,7 @@ export function createGroundPlane(x = 0, y = 0, z = -0.02) {
     plane.rotateX(-Math.PI / 2);
 
     return plane;
+
 }
 
 let plane = createGroundPlane();
@@ -45,8 +47,8 @@ export function update(camera, airplane, scene, light, animationOn) {
     if (animationOn) {
         if (camera.position.x < (10 + (controlPlane * 200))) {
             camera.translateOnAxis(vectorDirection, speed)
+            // light.translateOnAxis(vectorDirection, speed)
             airplane.translateY(-speed)
-            light.translateX(-speed)
 
         } else {
             controlPlane++;
@@ -106,7 +108,7 @@ export function MenuGame(initialState) {
     button.style.border = "none";
     button.style.cursor = "pointer"
     button.onclick = () => {
-        
+
         initialState();
     }
 

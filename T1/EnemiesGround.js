@@ -1,19 +1,23 @@
 import * as THREE from 'three';
 import { Missile } from './Missile.js';
 
-
-
 class EnemiesGround {
-    enemieGround
+
     constructor(camera) {
-        var enimiesGeometry = new THREE.BoxGeometry(6, 3, 6);
-        var enimiesMaterial = new THREE.MeshLambertMaterial({ color: "rgb(200,100,0)" });
+        var enimiesGeometry = new THREE.BoxGeometry(0, 0, 0);
+        var enimiesMaterial = new THREE.MeshLambertMaterial();
 
         this.enemieGround = new THREE.Mesh(enimiesGeometry, enimiesMaterial);
 
-        this.enemieGround.position.set(camera.position.x + 80, 3, Math.floor(Math.random() * 52 - 26));
+        this.enemieGround.position.set(camera.position.x + 80, 0, Math.floor(Math.random() * 52 - 26));
+
 
         return this;
+    }
+
+    add(object) {
+
+        this.enemieGround = object
     }
 
     shot(x, y, z) {
