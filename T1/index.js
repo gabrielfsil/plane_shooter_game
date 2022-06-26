@@ -139,7 +139,6 @@ function genereteEnimies() {
 
             scene.add(enemy.object);
             enimies.push(enemy);
-            console.log("Inimigo de ar")
         }
     }, 4000)
 
@@ -162,7 +161,6 @@ function genereteEnemiesGround() {
 
             scene.add(enimie.object);
             enemiesGround.push(enimie);
-            console.log("Inimigo de solo")
 
         }
     }, 6000)
@@ -250,7 +248,7 @@ function missilesManager() {
             missiles[i].moviment()
         } else {
             scene.remove(missiles[i].object);
-            enemiesGround.splice(i, 1)
+            missiles.splice(i, 1)
         }
     }
 
@@ -275,13 +273,16 @@ function enimiesManager() {
 
     for (var i = 0; i < enemiesGround.length; i++) {
 
-        if (!(enemiesGround[i].object.position.x - camera.position.x > 20)) {
+        if (enemiesGround[i].object.position.x - camera.position.x > 0) {
+
+            enemiesGround[i].moviment()
+
+        } else {
 
             scene.remove(enemiesGround[i].object);
             enemiesGround.splice(i, 1);
-        } else {
-            enemiesGround[i].moviment()
         }
+
     }
 }
 
@@ -324,7 +325,7 @@ function animate() {
     animationOn = airplane.breakdown < 5;
     var removeEnimies = [];
 
-    if (animationOn) {
+    if (animationOn) {  
 
         for (var i = 0; i < missiles.length; i++) {
             missiles[i].bounding.copy(missiles[i].object.geometry.boundingBox).applyMatrix4(missiles[i].object.matrixWorld);
@@ -341,7 +342,6 @@ function animate() {
                 airplane.addBreadown(2);
                 enimies[i].active = false
                 enimies[i].drop()
-                console.log("Bateu carai")
 
             }
 
@@ -404,15 +404,12 @@ function shotsManager() {
         for (var i = 0; i < bombs.length; i++) {
 
             if (bombs[i].object.position.y > -10) {
-                if (bombs[i].object.geometry.boundingSphere === null) {
-                    bombs[i].object.geometry.computeBoundingSphere();
-                } else {
-                    bombs[i].bounding.copy(bombs[i].object.geometry.boundingBox).applyMatrix4(bombs[i].object.matrixWorld)
-                }
+
+                bombs[i].bounding.copy(bombs[i].object.geometry.boundingBox).applyMatrix4(bombs[i].object.matrixWorld)
+
                 bombs[i].moviment();
 
             } else {
-
                 scene.remove(bombs[i].object);
                 bombs.splice(i, 1);
             }
@@ -456,6 +453,7 @@ function collisionManager() {
             if (shots[j]) {
                 if (enimies[i].bounding.intersectsSphere(shots[j].bounding)) {
                     enimies[i].drop()
+                    enimies[i].active = false
                     removeShots.push(j);
 
                 }
@@ -469,7 +467,6 @@ function collisionManager() {
             if (airplane.bounding.intersectsSphere(enemiesShots[i].bounding)) {
                 removeEnemiesShots.push(i);
                 airplane.addBreadown(1);
-                console.log("Tiro de inimigo no ar")
 
             }
         }
@@ -479,22 +476,22 @@ function collisionManager() {
         if (missiles[i].bounding.intersectsBox(airplane.bounding)) {
             removeMissiles.push(i);
             airplane.addBreadown(2);
-            console.log("Boom")
 
         }
     }
 
 
 
-    for (var j = 0; j < bombs.length; j++) {
-        for (var i = 0; i < enemiesGround.length; i++) {
+    for (var i = 0; i < enemiesGround.length; i++) {
+
+        for (var j = 0; j < bombs.length; j++) {
 
             if (bombs[j]) {
+
                 if (enemiesGround[i].bounding.intersectsBox(bombs[j].bounding)) {
                     enemiesGround[i].drop()
 
                 }
-
             }
         }
     }
@@ -522,13 +519,6 @@ function collisionManager() {
 }
 
 var healthbar = HealthBar()
-
-let health = document.getElementById("health")
-
-health.onclick = function () {
-    health.value -= 20;
-
-}
 
 
 var controls = new InfoBox();

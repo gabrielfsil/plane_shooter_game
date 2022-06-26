@@ -10,7 +10,7 @@ class Enemy {
 
     constructor(camera, dirMoviment, speed) {
 
-        var enimiesGeometry = new THREE.BoxGeometry(4, 4, 4);
+        var enimiesGeometry = new THREE.BoxGeometry(4, 4, 6);
         var enimiesMaterial = new THREE.MeshLambertMaterial({ transparent: true, opacity: 0 });
 
         this.object = new THREE.Mesh(enimiesGeometry, enimiesMaterial);

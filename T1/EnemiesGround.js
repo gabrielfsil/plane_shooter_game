@@ -38,8 +38,8 @@ class EnemiesGround {
     moviment() {
         if (this.fall) {
             if (this.object.position.y > -10) {
-                this.object.translateY(-0.2)
-                this.object.rotateX(-8)
+                this.object.translateY(-0.5)
+                this.object.translateZ(-0.5)
             }
         }
     }
