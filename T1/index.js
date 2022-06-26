@@ -6,6 +6,7 @@ import {
     degreesToRadians
 } from "../libs/util/util.js";
 import KeyboardState from '../libs/util/KeyboardState.js';
+import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js';
 
 var shots = []
 var enimies = [];
@@ -21,6 +22,7 @@ import { createAirplane } from './AirPlane.js';
 import { update, MenuGame } from './SceneManager.js';
 import { createEnimies } from './Enimies.js';
 import { createShot } from './Shot.js';
+
 
 var scene = new THREE.Scene();
 var renderer = initRenderer();
@@ -43,19 +45,105 @@ scene.add(light)
 var airplane = createAirplane();
 scene.add(airplane);
 
+// inimigo trajado_vertical1
+const gltfLoader = new GLTFLoader();
+gltfLoader.load('./assets/airplane/scene.gltf', (gltfScene) => {
+
+    // gltfScene.scene.rotation.y = Math.PI / 24;
+    gltfScene.scene.position.y = 30;
+    gltfScene.scene.position.z = 10;
+    gltfScene.scene.scale.set(0.5, 0.5, 0.5);
+    // var speedEnimies = 0;
+    // gltfScene.push({ gltfScene, speed: speedEnimies });
+    scene.add(gltfScene.scene);
+});
+
+// inimigo trajado_vertical2
+gltfLoader.load('./assets/airplane/scene.gltf', (gltfScene) => {
+
+    // gltfScene.scene.rotation.y = Math.PI / 24;
+    gltfScene.scene.position.y = 30;
+    gltfScene.scene.position.z = -10;
+    gltfScene.scene.scale.set(0.5, 0.5, 0.5);
+    // var speedEnimies = 0;
+    // gltfScene.push({ gltfScene, speed: speedEnimies });
+    scene.add(gltfScene.scene);
+});
+
+// inimigo trajado_vertical3
+gltfLoader.load('./assets/airplane/scene.gltf', (gltfScene) => {
+
+    // gltfScene.scene.rotation.y = Math.PI / 24;
+    gltfScene.scene.position.y = 30;
+    gltfScene.scene.position.z = 5;
+    gltfScene.scene.scale.set(0.5, 0.5, 0.5);
+    // var speedEnimies = 0;
+    // gltfScene.push({ gltfScene, speed: speedEnimies });
+    scene.add(gltfScene.scene);
+});
+
+// inimigo trajado_vertical4
+gltfLoader.load('./assets/airplane/scene.gltf', (gltfScene) => {
+
+    // gltfScene.scene.rotation.y = Math.PI / 24;
+    gltfScene.scene.position.y = 30;
+    gltfScene.scene.position.z = -5;
+    gltfScene.scene.scale.set(0.5, 0.5, 0.5);
+    // var speedEnimies = 0;
+    // gltfScene.push({ gltfScene, speed: speedEnimies });
+    scene.add(gltfScene.scene);
+});
+
+// inimigo trajado_horizontal1
+gltfLoader.load('./assets/airplane/scene.gltf', (gltfScene) => {
+
+    // gltfScene.scene.rotation.y = Math.PI / 24;
+    gltfScene.scene.position.x = -10;
+    gltfScene.scene.position.y = 30;
+    gltfScene.scene.position.z = -10;
+    gltfScene.scene.scale.set(0.5, 0.5, 0.5);
+    // var speedEnimies = 0;
+    // gltfScene.push({ gltfScene, speed: speedEnimies });
+    scene.add(gltfScene.scene);
+});
+
+
+
 
 function genereteEnimies() {
 
-    return setInterval(() => {
-        var enimie = createEnimies(camera);
-        var boundingBox = createBoundingBox(enimie);
-        var speedEnimies = - Math.random() * 0.4 - 0.2
-        scene.add(enimie);
-        boxEnimies.push(boundingBox);
-        enimies.push({ enimie, speed: speedEnimies });
-    }, 3000)
+    // class Position {
+    //     constructor(x,y,z) {
+    //         this.x = x;
+    //         this.y = y;
+    //         this.z = z;
+    //     }
+
+    // }
+
+    // const position_vertical = new Position(120,10,30);
+
+    var enimie = createEnimies(camera);
+    var boundingBox = createBoundingBox(enimie);
+    scene.add(enimie);
+    var speedEnimies = -0.4
+    boxEnimies.push(boundingBox);
+    enimies.push({ enimie, speed: speedEnimies });
+
+
+
+
 
 }
+//var enimie = createEnimies(camera);
+// var boundingBox = createBoundingBox(enimie);
+// scene.add(enimie);
+//     var speedEnimies = -0.4 
+//     boxEnimies.push(boundingBox);
+//     enimies.push({ enimie, speed: speedEnimies });
+
+
+
 
 var loopEnimies = genereteEnimies()
 
