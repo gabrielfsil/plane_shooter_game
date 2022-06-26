@@ -7,24 +7,23 @@ class EnemiesGround {
         var enimiesGeometry = new THREE.BoxGeometry(0, 0, 0);
         var enimiesMaterial = new THREE.MeshLambertMaterial();
 
-        this.enemieGround = new THREE.Mesh(enimiesGeometry, enimiesMaterial);
+        this.object = new THREE.Mesh(enimiesGeometry, enimiesMaterial);
 
-        this.enemieGround.position.set(camera.position.x + 80, 0, Math.floor(Math.random() * 52 - 26));
-
+        this.object.position.set(camera.position.x + 160, 0, Math.floor(Math.random() * 52 - 26));
 
         return this;
     }
 
     add(object) {
 
-        this.enemieGround = object
+        this.object = object
     }
 
     shot(x, y, z) {
 
-        let missile = new Missile([this.enemieGround.position.x, this.enemieGround.position.y, this.enemieGround.position.z], [x, y, z]);
+        let missile = new Missile([this.object.position.x, this.object.position.y, this.object.position.z], [x, y, z]);
 
-        missile.missile.position.set(this.enemieGround.position.x, this.enemieGround.position.y, this.enemieGround.position.z)
+        missile.object.position.set(this.object.position.x, this.object.position.y, this.object.position.z)
 
         return missile
     }

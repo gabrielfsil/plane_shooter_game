@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import KeyboardState from '../libs/util/KeyboardState.js';
+import { createBoundingBox } from './index.js';
 import { createShot } from './Shot.js';
 
 
@@ -23,12 +24,23 @@ class Airplane {
         this.object = new THREE.Mesh(airPlaneGeometry, airPlaneMaterial);
 
         this.object.position.set(-170, 10, 0);
+        this.bounding = createBoundingBox(this.object);
+        this.breakdown = 0;
+
 
         this.cadence = setInterval(() => {
             this.enabled = true
         }, 500);
 
         return this;
+    }
+
+
+    addBreadown(damage) {
+
+        if (this.breakdown < 5) {
+            this.breakdown += damage
+        }
     }
 
     moviment(animationOn, camera) {

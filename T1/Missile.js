@@ -1,5 +1,6 @@
 import * as THREE from "three"
 import { degreesToRadians } from "../libs/util/util.js";
+import { createBoundingBox } from "./index.js";
 
 
 class Missile {
@@ -7,26 +8,27 @@ class Missile {
 
         var missileGeometry = new THREE.CylinderGeometry(0.3, 0.3, 1, 10);
         var missileMaterial = new THREE.MeshLambertMaterial({ color: 'orange' });
-        this.missile = new THREE.Mesh(missileGeometry, missileMaterial);
+        this.object = new THREE.Mesh(missileGeometry, missileMaterial);
 
         this.destiny = new THREE.Vector3(x2 - x1 + 40, 0, z2 - z1);
+        this.bounding = createBoundingBox(this.object)
 
         return this
     }
 
     moviment() {
 
-        if (this.missile.position.y === 10) {
+        if (this.object.position.y === 10) {
 
-            this.missile.position.y += 0.05;
+            this.object.position.y += 0.05;
 
 
-        } else if (this.missile.position.y > 10) {
+        } else if (this.object.position.y > 10) {
 
-            this.missile.translateOnAxis(this.destiny, 0.01)
+            this.object.translateOnAxis(this.destiny, 0.01)
 
         } else {
-            this.missile.position.y += 0.25;
+            this.object.position.y += 0.25;
         }
 
     }
