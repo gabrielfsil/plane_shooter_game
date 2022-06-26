@@ -1,7 +1,4 @@
 import * as THREE from 'three';
-import {
-    degreesToRadians
-} from "../libs/util/util.js";
 import KeyboardState from '../libs/util/KeyboardState.js';
 import { createShot } from './Shot.js';
 
@@ -20,14 +17,14 @@ function createBoundingSpheres(sphere) {
 class Airplane {
 
     constructor() {
-        var airPlaneGeometry = new THREE.CylinderGeometry(1, 1, 1, 1);
-        var airPlaneMaterial = new THREE.MeshLambertMaterial();
+        var airPlaneGeometry = new THREE.CylinderGeometry(3, 3, 4, 20);
+        var airPlaneMaterial = new THREE.MeshLambertMaterial({ transparent: true, opacity: 0 });
 
         this.object = new THREE.Mesh(airPlaneGeometry, airPlaneMaterial);
 
         this.object.position.set(-170, 10, 0);
         // this.object.rotateZ(degreesToRadians(90));
-        
+
         this.cadence = setInterval(() => {
             this.enabled = true
         }, 500);

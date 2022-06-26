@@ -27,33 +27,49 @@ import { update, MenuGame } from './SceneManager.js';
 import { createEnimies } from './Enimies.js';
 import { createShot } from './Shot.js';
 import { EnemiesGround } from './EnemiesGround.js';
-import { Vector3 } from '../build/three.module.js';
 
 var scene = new THREE.Scene();
 var renderer = initRenderer();
 var camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(-200, 40, 0);
+// camera.position.set(-400, 200, 0);
 camera.rotateY(degreesToRadians(-90));
 camera.rotateX(degreesToRadians(-40));
 
-
-// Faça-se a luz
 let dirLight = new THREE.DirectionalLight("rgb(255,255,255)")
 
-dirLight.position.copy(new THREE.Vector3(-20, 80, 0));
+var helperGeometry = new THREE.BoxGeometry(6, 6, 6);
+var helperMaterial = new THREE.MeshLambertMaterial({ color: "rgb(100,100,100)" });
+
+var helper = new THREE.Mesh(helperGeometry, helperMaterial);
+
+helper.position.set(-120, 50, 50)
+
 
 dirLight.castShadow = true;
 
-dirLight.shadow.mapSize.width = 512
-dirLight.shadow.mapSize.height = 512
+dirLight.shadow.mapSize.width = 256
+dirLight.shadow.mapSize.height = 256
 dirLight.shadow.camera.near = 0.1
-dirLight.shadow.camera.far = 200
-dirLight.shadow.camera.left = -20
-dirLight.shadow.camera.right = 20
-dirLight.shadow.camera.bottom = -20
-dirLight.shadow.camera.top = 20
+dirLight.shadow.camera.far = 100
+dirLight.shadow.camera.left = -70
+dirLight.shadow.camera.right = 60
+dirLight.shadow.camera.bottom = -60
+dirLight.shadow.camera.top = 40
 
-scene.add(dirLight);
+// let spotHelper = new THREE.CameraHelper(dirLight.shadow.camera, 0xFF8C00);
+// scene.add(spotHelper);
+
+helper.add(dirLight);
+
+scene.add(helper);
+
+var target = new THREE.Object3D()
+target.position.set(-120, -10, -0)
+dirLight.target = target
+scene.add(target)
+
+console.log(dirLight.target)
 
 let loader = new GLTFLoader();
 
@@ -74,12 +90,17 @@ const gltfLoader = new GLTFLoader();
 
 var boxAirplane = createBoundingBox(airplane.object);
 
-gltfLoader.load('./assets/airplane.glb', (gltfScene) => {
+gltfLoader.load('./assets/airplane.glb', (gltf) => {
 
-    gltfScene.scene.rotateY(degreesToRadians(180));
-    gltfScene.scene.castShadow = true
-    
-    airplane.object.add(gltfScene.scene);
+    let object = gltf.scene;
+    object.rotateY(degreesToRadians(180));
+    object.scale.set(0.8, 0.8, 0.8)
+    object.traverse(function (child) {
+        if (child) {
+            child.castShadow = true;
+        }
+    })
+    airplane.object.add(object);
 });
 
 scene.add(airplane.object);
@@ -87,14 +108,14 @@ scene.add(airplane.object);
 
 function genereteEnimies() {
 
-    // return setInterval(() => {
-    //     var enimie = createEnimies(camera);
-    //     var boundingBox = createBoundingBox(enimie);
-    //     var speedEnimies = - Math.random() * 0.4 - 0.2
-    //     scene.add(enimie);
-    //     boxEnimies.push(boundingBox);
-    //     enimies.push({ enimie, speed: speedEnimies });
-    // }, 3000)
+    return setInterval(() => {
+        var enimie = createEnimies(camera);
+        var boundingBox = createBoundingBox(enimie);
+        var speedEnimies = - Math.random() * 0.4 - 0.2
+        scene.add(enimie);
+        boxEnimies.push(boundingBox);
+        enimies.push({ enimie, speed: speedEnimies });
+    }, 3000)
 
 
 }
@@ -116,7 +137,7 @@ function genereteEnemiesGround() {
         scene.add(enimie.enemieGround);
         enemiesGround.push(enimie);
 
-    }, 2000)
+    }, 6000)
 }
 
 function genereteMissiles(enemie) {
@@ -207,6 +228,14 @@ function gameOver(indexEnimies) {
     animationOn = false;
 
 
+    for (var i = 0; i < enimies.length; i++) {
+
+        scene.remove(enimies[i].enemie)
+    }
+
+    enimies = []
+    boxEnimies = []
+
 
     setTimeout(() => {
 
@@ -243,7 +272,7 @@ function animate() {
 
             if (boxEnimies[i].intersectsBox(boxAirplane)) {
 
-                gameOver(i);
+                // gameOver(i);
 
             }
 
@@ -363,7 +392,7 @@ function render() {
     missilesManager();
     animate();
     // fight();
-    update(camera, airplane.object, scene, dirLight, animationOn);
+    update(camera, airplane.object, scene, helper, animationOn, target);
     requestAnimationFrame(render);
     renderer.render(scene, camera);
 
