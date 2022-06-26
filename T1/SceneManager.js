@@ -118,3 +118,53 @@ export function MenuGame(initialState) {
 
     return contentBox;
 }
+
+export function HealthBar() {
+    var content = document.createElement("div");
+    content.style.position = "absolute";
+    content.style.right = `0px`
+    content.style.top = `0px`
+    content.style.width = "200px";
+    content.style.height = "100px";
+    content.style.background = "black";
+    content.style.opacity = '0.6';
+
+    var title = document.createElement("h3");
+    title.style.fontFamily = "sans-serif"
+    title.style.fontSize = "18px";
+    title.style.textAlign = "left";
+    title.style.marginLeft = '16px';
+    title.style.color = 'white';
+
+    // var healthbar = document.createElement("div");
+    // healthbar.style.position = 'absolute';
+    // healthbar.style.left = `16px`;
+    // healthbar.style.top = `50px`;
+    // healthbar.style.width = '130px';
+    // healthbar.style.height = '20px';
+    // healthbar.style.border = `2px solid white`
+ 
+    var progressbar = document.createElement("progress");
+    progressbar.style.width = '150px';
+    progressbar.style.height = '20px';
+    progressbar.style.marginLeft = '16px';
+    progressbar.style.borderRadius = '0';
+    progressbar.id = 'health';
+    progressbar.value = '100';
+    progressbar.max = '100';
+
+
+    
+
+    var textTitle = document.createTextNode("Barra de Danos");
+
+    title.appendChild(textTitle);
+    content.appendChild(title);
+    content.appendChild(progressbar)
+
+
+
+    document.body.appendChild(content);
+    return content;
+
+}

@@ -23,7 +23,7 @@ var animationOn = true;
 
 
 import { Airplane } from './AirPlane.js';
-import { update, MenuGame } from './SceneManager.js';
+import { update, MenuGame, HealthBar } from './SceneManager.js';
 import { Enemy, createEnimies } from './Enimies.js';
 import { createShot } from './Shot.js';
 import { EnemiesGround } from './EnemiesGround.js';
@@ -227,10 +227,18 @@ function initialState() {
     animationOn = true;
     loopEnimies = genereteEnimies();
     menu.style.display = "none"
+    healthbar.style.display = 'flex'
 }
 
 var menu = MenuGame(initialState)
+var healthbar = HealthBar()
 
+let health = document.getElementById("health")
+
+health.onclick = function() {
+    health.value -= 20;
+
+}
 
 function missilesManager() {
 
@@ -448,6 +456,8 @@ controls.add("Left arrow move to left")
 controls.add("Right arrow move to right")
 controls.add("Space or Ctrl dispatch shot")
 controls.show();
+
+
 
 render();
 function render() {
