@@ -6,12 +6,11 @@ import {
     degreesToRadians
 } from "../libs/util/util.js";
 import KeyboardState from '../libs/util/KeyboardState.js';
+import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js'
 
-import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js';
-
-const container = document.getElementById( 'container' );
+const container = document.getElementById('container');
 const stats = new Stats();
-container.appendChild( stats.dom );
+container.appendChild(stats.dom);
 
 var shots = []
 var missiles = []
@@ -23,13 +22,12 @@ var sphereShots = [];
 var animationOn = true;
 
 
-var keyboard = new KeyboardState();
-
-import { createAirplane } from './AirPlane.js';
+import { Airplane } from './AirPlane.js';
 import { update, MenuGame } from './SceneManager.js';
 import { createEnimies } from './Enimies.js';
 import { createShot } from './Shot.js';
 import { EnemiesGround } from './EnemiesGround.js';
+import { Vector3 } from '../build/three.module.js';
 
 var scene = new THREE.Scene();
 var renderer = initRenderer();
@@ -38,10 +36,11 @@ camera.position.set(-200, 40, 0);
 camera.rotateY(degreesToRadians(-90));
 camera.rotateX(degreesToRadians(-40));
 
+
 // Faça-se a luz
 let dirLight = new THREE.DirectionalLight("rgb(255,255,255)")
 
-dirLight.position.copy(new THREE.Vector3(-20, 40, 0));
+dirLight.position.copy(new THREE.Vector3(-20, 80, 0));
 
 dirLight.castShadow = true;
 
@@ -58,10 +57,32 @@ scene.add(dirLight);
 
 let loader = new GLTFLoader();
 
+function createBoundingBox(box) {
+
+    let boundingBox = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+
+    boundingBox.setFromObject(box);
 
 
-var airplane = createAirplane();
-scene.add(airplane);
+    return boundingBox
+
+}
+
+
+var airplane = new Airplane();
+const gltfLoader = new GLTFLoader();
+
+var boxAirplane = createBoundingBox(airplane.object);
+
+gltfLoader.load('./assets/airplane.glb', (gltfScene) => {
+
+    gltfScene.scene.rotateY(degreesToRadians(180));
+    gltfScene.scene.castShadow = true
+    
+    airplane.object.add(gltfScene.scene);
+});
+
+scene.add(airplane.object);
 
 
 function genereteEnimies() {
@@ -105,7 +126,8 @@ function genereteMissiles(enemie) {
 
             let index = Math.floor(Math.random() + enemiesGround.length - 1);
 
-            let missile = enemiesGround[index].shot(airplane.position.x, airplane.position.y, airplane.position.z);
+            let missile = enemiesGround[index].shot(airplane.object.position.x, airplane.object.position.y, airplane.object.position.z);
+
             missiles.push(missile)
             scene.add(missile.missile);
         }
@@ -120,76 +142,20 @@ var loopMissiles = genereteMissiles();
 
 function initialState() {
     camera.position.set(camera.position.x, 40, 0);
-    airplane.position.set(airplane.position.x, 10, 0);
+    airplane.object.position.set(airplane.object.position.x, 10, 0);
     animationOn = true;
-    light.position.set(light.position.x, 40, 0);
     loopEnimies = genereteEnimies();
     menu.style.display = "none"
 }
 
-function createBoundingBox(box) {
-
-    let boundingBox = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-    boundingBox.setFromObject(box);
-
-    return boundingBox
-
-}
-
-function createBoundingSpheres(sphere) {
-
-    let boundingSpheres = new THREE.Sphere(sphere.position, 0.6)
-
-    return boundingSpheres
-
-}
-
-
-var boxAirplane = createBoundingBox(airplane);
-
 var menu = MenuGame(initialState)
 
-function keyboardUpdate() {
-
-    keyboard.update();
-
-    var speed = 0.8;
-
-    if (animationOn) {
-
-        if (airplane.position.x - camera.position.x < 80) {
-            if (keyboard.pressed("up")) airplane.translateY(-speed)
-        }
-        if (airplane.position.x - camera.position.x > 20) {
-            if (keyboard.pressed("down")) airplane.translateY(speed);
-        }
-        if (airplane.position.z - camera.position.z < 28) {
-
-            if (keyboard.pressed("right")) airplane.translateZ(speed);
-        }
-        if (airplane.position.z - camera.position.z > -28) {
-
-            if (keyboard.pressed("left")) airplane.translateZ(-speed)
-        }
-        if (keyboard.down("space") || keyboard.down("ctrl")) {
-
-            var sphere = createShot(airplane.position);
-            var boundingSphere = createBoundingSpheres(sphere);
-            scene.add(sphere)
-            shots.push(sphere)
-            sphereShots.push(boundingSphere);
-
-        }
-    }
-
-
-}
 
 function missilesManager() {
 
     for (var i = 0; i < missiles.length; i++) {
 
-        if ((airplane.position.x - camera.position.x < 80) && (airplane.position.x - camera.position.x > 20) && (missiles[i].missile.position.z - camera.position.z < 35) && (missiles[i].missile.position.z - camera.position.z > -35)) {
+        if ((airplane.object.position.x - camera.position.x < 80) && (airplane.object.position.x - camera.position.x > 20) && (missiles[i].missile.position.z - camera.position.z < 35) && (missiles[i].missile.position.z - camera.position.z > -35)) {
             missiles[i].moviment()
         } else {
             scene.remove(missiles[i].missile);
@@ -226,6 +192,12 @@ function enimiesManager() {
     }
 }
 
+// var sphere = createShot(enimies.position);
+// var boundingSphere = createBoundingSpheres(sphere);
+// scene.add(sphere)
+// shots.push(sphere)
+// sphereShots.push(boundingSphere);
+
 
 function gameOver(indexEnimies) {
     animation1();
@@ -256,8 +228,6 @@ function animation1(enimie) {
 
 function animation2(x, y, z, size) {
 
-
-
 }
 
 
@@ -265,7 +235,7 @@ function animate() {
 
     if (animationOn) {
 
-        boxAirplane.copy(airplane.geometry.boundingBox).applyMatrix4(airplane.matrixWorld);
+        boxAirplane.copy(airplane.object.geometry.boundingBox).applyMatrix4(airplane.object.matrixWorld);
 
         for (var i = 0; i < boxEnimies.length; i++) {
 
@@ -350,6 +320,27 @@ function collisionManager() {
 
 }
 
+// var enemyClass = [enemyDiagonal, enemyHorizontal, enemyVertical, enemyArco, enemyTerra, airplane]
+// var enemyHp = [1,1,1,1,1,5]
+// var enemyStrenght = [1,1,1,1,2,1]
+var airplaneIsDead = false
+var airplaneHitPoints
+var Strenght = 1
+
+
+
+function fight() {
+    if (airplaneHitPoints > 0) {
+        airplaneHitPoints = airplaneHitPoints - Strenght
+        document.getElementById("airplaneHp").innerHTML = airplaneHitPoints
+    }
+    else if (!airplaneIsDead) {
+        airplaneHitPoints = 0
+        airplaneIsDead = true
+        document.getElementById("airplaneHp").innerHTML = airplaneHitPoints
+    }
+}
+
 var controls = new InfoBox();
 controls.add("Plane Short");
 controls.addParagraph();
@@ -364,12 +355,16 @@ render();
 function render() {
     stats.update();
     collisionManager();
-    keyboardUpdate();
+
+    airplane.moviment(animationOn, camera)
+    airplane.shot(scene, shots, sphereShots)
+
     enimiesManager();
     missilesManager();
     animate();
-    update(camera, airplane, scene, dirLight, animationOn);
+    // fight();
+    update(camera, airplane.object, scene, dirLight, animationOn);
     requestAnimationFrame(render);
     renderer.render(scene, camera);
- 
+
 }

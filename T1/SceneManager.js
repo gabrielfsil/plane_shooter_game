@@ -47,8 +47,7 @@ export function update(camera, airplane, scene, light, animationOn) {
     if (animationOn) {
         if (camera.position.x < (10 + (controlPlane * 200))) {
             camera.translateOnAxis(vectorDirection, speed)
-            // light.translateOnAxis(vectorDirection, speed)
-            airplane.translateY(-speed)
+            airplane.translateX(speed)
 
         } else {
             controlPlane++;
