@@ -72,7 +72,7 @@ class Airplane {
 
     shot(scene, shots, sphereShots) {
 
-        if (keyboard.down("space") || keyboard.pressed("ctrl")) {
+        if (keyboard.pressed("ctrl")) {
 
             if (this.enabled) {
                 this.enabled = false
@@ -85,7 +85,10 @@ class Airplane {
             }
         }
 
+        if(keyboard.down("space")){
 
+            
+        }
 
     }
 }

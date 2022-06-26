@@ -24,9 +24,10 @@ var animationOn = true;
 
 import { Airplane } from './AirPlane.js';
 import { update, MenuGame } from './SceneManager.js';
-import { Enemy } from './Enimies.js';
+import { Enemy, createEnimies } from './Enimies.js';
 import { createShot } from './Shot.js';
 import { EnemiesGround } from './EnemiesGround.js';
+
 
 var scene = new THREE.Scene();
 var renderer = initRenderer();
@@ -58,6 +59,14 @@ dirLight.shadow.camera.top = 40
 
 // let spotHelper = new THREE.CameraHelper(dirLight.shadow.camera, 0xFF8C00);
 // scene.add(spotHelper);
+// inimigo trajado_vertical1
+
+let loader = new GLTFLoader();
+
+
+
+
+
 
 helper.add(dirLight);
 
@@ -67,8 +76,38 @@ var target = new THREE.Object3D()
 target.position.set(-120, -10, -0)
 dirLight.target = target
 scene.add(target)
+// class Position {
+//     constructor(x,y,z) {
+//         this.x = x;
+//         this.y = y;
+//         this.z = z;
+//     }
 
-let loader = new GLTFLoader();
+// }
+
+// const position_vertical = new Position(120,10,30);
+
+// var enimie = createEnimies(camera);
+// var boundingBox = createBoundingBox(enimie);
+// scene.add(enimie);
+// var speedEnimies = -0.4
+// boxEnimies.push(boundingBox);
+// enimies.push({ enimie, speed: speedEnimies });
+
+
+
+
+
+//var enimie = createEnimies(camera);
+// var boundingBox = createBoundingBox(enimie);
+// scene.add(enimie);
+//     var speedEnimies = -0.4 
+//     boxEnimies.push(boundingBox);
+//     enimies.push({ enimie, speed: speedEnimies });
+
+
+
+
 
 export function createBoundingBox(box) {
 
@@ -100,7 +139,6 @@ gltfLoader.load('./assets/airplane.glb', (gltf) => {
 
 scene.add(airplane.object);
 
-
 function genereteEnimies() {
 
     return setInterval(() => {
@@ -109,21 +147,36 @@ function genereteEnimies() {
 
         let indexMoviment = Math.floor(Math.random() * 4)
         var enemy = new Enemy(camera, dirMoviment[indexMoviment], speedEnimies);
-        loader.load("./assets/fighter.glb", function (gltf) {
-            let object = gltf.scene;
-            object.traverse(function (child) {
-                if (child) {
-                    child.castShadow = true;
-                }
-            })
-            object.rotateY(degreesToRadians(-90))
-            enemy.object.add(object)
-        }, null, null);
+
+        if ( indexMoviment === 1 || indexMoviment === 2) {
+            loader.load('./assets/airplane/scene.gltf', (gltf) => {
+
+                let object = gltf.scene;
+                object.traverse(function (child) {
+                    if (child) {
+                        child.castShadow = true;
+                    }
+                })
+                
+                enemy.object.add(object)
+            });
+        } else {
+
+            loader.load("./assets/fighter.glb", function (gltf) {
+                let object = gltf.scene;
+                object.traverse(function (child) {
+                    if (child) {
+                        child.castShadow = true;
+                    }
+                })
+                object.rotateY(degreesToRadians(-90))
+                enemy.object.add(object)
+            }, null, null);
+        }
 
         scene.add(enemy.object);
         enimies.push(enemy);
     }, 3000)
-
 
 }
 

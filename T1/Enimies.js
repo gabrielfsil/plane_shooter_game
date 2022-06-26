@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { createBoundingBox } from './index.js';
 
+import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js';
 
 
 export function createEnimies(camera) {
@@ -8,8 +9,11 @@ export function createEnimies(camera) {
     var enimiesMaterial = new THREE.MeshLambertMaterial({ color: "rgb(0,100,100)" });
 
     var enimies = new THREE.Mesh(enimiesGeometry, enimiesMaterial);
-    enimies.castShadow = true
+    enimies.castShadow = false
     enimies.position.set(camera.position.x + 120, 10, Math.floor(Math.random() * 52 - 26));
+
+    enimies.position.set(camera.position.x + 120, 10, -30);
+    //enimies.position.set(camera.position.x + 120, 10, 30);
 
     return enimies;
 }
@@ -23,7 +27,7 @@ class Enemy {
         var enimiesMaterial = new THREE.MeshLambertMaterial({ transparent: true, opacity: 0 });
 
         this.object = new THREE.Mesh(enimiesGeometry, enimiesMaterial);
-        this.object.castShadow = true
+        
 
         let zPosition = Math.floor(Math.random() * 52 - 26)
         this.object.position.set(camera.position.x + 150, 10, zPosition);
