@@ -156,7 +156,7 @@ export function HealthBar() {
 
     
 
-    var textTitle = document.createTextNode("Barra de Danos");
+    var textTitle = document.createTextNode("Health");
 
     title.appendChild(textTitle);
     content.appendChild(title);
