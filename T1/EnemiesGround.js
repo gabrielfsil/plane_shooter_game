@@ -11,13 +11,14 @@ class EnemiesGround {
         this.object = new THREE.Mesh(enimiesGeometry, enimiesMaterial);
         this.bounding = createBoundingBox(this.object)
         this.fall = false;
-        this.object.position.set(camera.position.x + 160, 0, Math.floor(Math.random() * 52 - 26));
+        // let zPosition = Math.floor(Math.random() * 52 - 26)
+        let zPosition = -20;
+        this.object.position.set(camera.position.x + 160, 0, zPosition);
 
         return this;
     }
 
     drop() {
-        console.log("Buuum")
         this.fall = true
     }
 

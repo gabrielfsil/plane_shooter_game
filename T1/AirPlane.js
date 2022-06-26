@@ -41,13 +41,29 @@ class Airplane {
     }
 
 
-    addBreadown(damage) {
+    addBreakdown(damage) {
+
+        if (keyboard.pressed("G")) {
+            console.log("Modo Furtivo")
+        } else {
+
+            if (this.breakdown < 5) {
+                let health = document.getElementById("health")
+                if (health) {
+                    health.value -= 20 * damage
+                    this.breakdown += damage
+                }
+            }
+        }
+    }
+
+    removeBreakdown(health) {
 
         if (this.breakdown < 5) {
-            let health = document.getElementById("health")
+            let healthBar = document.getElementById("health")
             if (health) {
-                health.value -= 20 * damage
-                this.breakdown += damage
+                healthBar.value += 20 * health
+                this.breakdown -= health
             }
         }
     }

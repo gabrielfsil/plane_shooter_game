@@ -15,7 +15,8 @@ class Enemy {
 
         this.object = new THREE.Mesh(enimiesGeometry, enimiesMaterial);
 
-        let zPosition = Math.floor(Math.random() * 52 - 26)
+        // let zPosition = Math.floor(Math.random() * 52 - 26)
+        let zPosition = 20;
         this.object.position.set(camera.position.x + 150, 10, zPosition);
         this.bounding = createBoundingBox(this.object);
 

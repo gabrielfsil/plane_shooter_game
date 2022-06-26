@@ -16,7 +16,8 @@ var missiles = []
 var enimies = [];
 var enemiesGround = [];
 var enemiesShots = []
-var bombs = []
+var bombs = [];
+var healths = [];
 
 var dirMoviment = ["horizontal", "vertical", "diagonal", "arco"]
 var animationOn = true;
@@ -26,6 +27,7 @@ import { Airplane } from './AirPlane.js';
 import { update, MenuGame, HealthBar } from './SceneManager.js';
 import { Enemy } from './Enimies.js';
 import { EnemiesGround } from './EnemiesGround.js';
+import { Health } from './Health.js';
 
 
 var scene = new THREE.Scene();
@@ -206,10 +208,26 @@ function genereteMissiles() {
 
 }
 
+function genereteHealth() {
+
+    return setInterval(() => {
+        if (animationOn) {
+
+            let health = new Health(camera);
+
+            scene.add(health.object);
+            healths.push(health);
+        }
+
+    }, 2000)
+
+}
+
 var loopEnimies = genereteEnimies()
 var loopEnemiesGround = genereteEnemiesGround()
 var loopMissiles = genereteMissiles();
 var loopShotEnemies = genereteShotEnemies();
+var loopHealth = genereteHealth();
 
 function initialState() {
     camera.position.set(camera.position.x, 40, 0);
@@ -230,10 +248,12 @@ function initialState() {
     clearInterval(loopEnemiesGround);
     clearInterval(loopMissiles);
     clearInterval(loopShotEnemies);
+    clearInterval(loopHealth);
     loopEnimies = genereteEnimies();
     loopEnemiesGround = genereteEnemiesGround()
     loopMissiles = genereteMissiles();
     loopShotEnemies = genereteShotEnemies();
+    loopHealth = genereteHealth();
     menu.style.display = "none"
     healthbar.style.display = "block"
 }
@@ -293,6 +313,7 @@ function gameOver() {
     clearInterval(loopEnemiesGround);
     clearInterval(loopMissiles);
     clearInterval(loopShotEnemies);
+    clearInterval(loopHealth);
     animationOn = false;
 
 
@@ -324,11 +345,19 @@ function animate() {
 
     animationOn = airplane.breakdown < 5;
     var removeEnimies = [];
+    var removeHealth = [];
 
-    if (animationOn) {  
+    if (animationOn) {
 
         for (var i = 0; i < missiles.length; i++) {
             missiles[i].bounding.copy(missiles[i].object.geometry.boundingBox).applyMatrix4(missiles[i].object.matrixWorld);
+        }
+
+        for (var i = 0; i < healths.length; i++) {
+            healths[i].bounding.copy(healths[i].object.geometry.boundingBox).applyMatrix4(healths[i].object.matrixWorld);
+            if(healths[i].object.position.x - camera.position.x < 0){
+                removeHealth.push(i);
+            }
         }
 
         airplane.bounding.copy(airplane.object.geometry.boundingBox).applyMatrix4(airplane.object.matrixWorld);
@@ -339,7 +368,7 @@ function animate() {
 
             if (enimies[i].bounding.intersectsBox(airplane.bounding) && enimies[i].active) {
 
-                airplane.addBreadown(2);
+                airplane.addBreakdown(2);
                 enimies[i].active = false
                 enimies[i].drop()
 
@@ -356,6 +385,11 @@ function animate() {
         for (var i = 0; i < removeEnimies.length; i++) {
             scene.remove(enimies[removeEnimies[i]].object);
             enimies.splice(removeEnimies[i], 1);
+        }
+
+        for (var i = 0; i < removeHealth.length; i++) {
+            scene.remove(healths[removeHealth[i]].object);
+            healths.splice(removeHealth[i], 1);
         }
 
     } else {
@@ -445,6 +479,7 @@ function collisionManager() {
     var removeShots = [];
     var removeEnemiesShots = [];
     var removeMissiles = [];
+    var removeHealth = [];
 
     for (var i = 0; i < enimies.length; i++) {
 
@@ -466,7 +501,7 @@ function collisionManager() {
         if (enemiesShots[i]) {
             if (airplane.bounding.intersectsSphere(enemiesShots[i].bounding)) {
                 removeEnemiesShots.push(i);
-                airplane.addBreadown(1);
+                airplane.addBreakdown(1);
 
             }
         }
@@ -475,7 +510,15 @@ function collisionManager() {
     for (var i = 0; i < missiles.length; i++) {
         if (missiles[i].bounding.intersectsBox(airplane.bounding)) {
             removeMissiles.push(i);
-            airplane.addBreadown(2);
+            airplane.addBreakdown(2);
+
+        }
+    }
+
+    for (var i = 0; i < healths.length; i++) {
+        if (healths[i].bounding.intersectsBox(airplane.bounding)) {
+            removeHealth.push(i);
+            airplane.removeBreakdown(1);
 
         }
     }
@@ -516,6 +559,10 @@ function collisionManager() {
         enemiesShots.splice(removeEnemiesShots[i], 1);
     }
 
+    for (var i = 0; i < removeHealth.length; i++) {
+        scene.remove(healths[removeHealth[i]].object);
+        healths.splice(removeHealth[i], 1);
+    }
 }
 
 var healthbar = HealthBar()
