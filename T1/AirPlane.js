@@ -23,7 +23,6 @@ class Airplane {
         this.object = new THREE.Mesh(airPlaneGeometry, airPlaneMaterial);
 
         this.object.position.set(-170, 10, 0);
-        // this.object.rotateZ(degreesToRadians(90));
 
         this.cadence = setInterval(() => {
             this.enabled = true
@@ -36,7 +35,7 @@ class Airplane {
 
         keyboard.update();
 
-        var speed = 0.8;
+        var speed = 0.7;
 
         if (animationOn) {
 
@@ -55,17 +54,6 @@ class Airplane {
                 if (keyboard.pressed("left")) this.object.translateZ(-speed)
             }
 
-
-            // setInterval(() => {
-            //     if (keyboard.pressed("ctrl")) {
-            //         var sphere = createShot(this.object.position);
-            //         var boundingSphere = createBoundingSpheres(sphere);
-            //         scene.add(sphere)
-            //         shots.push(sphere)
-            //         sphereShots.push(boundingSphere);
-            //     }
-
-            // }, 500)
         }
 
     }

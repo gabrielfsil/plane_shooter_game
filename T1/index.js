@@ -32,7 +32,6 @@ var scene = new THREE.Scene();
 var renderer = initRenderer();
 var camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(-200, 40, 0);
-// camera.position.set(-400, 200, 0);
 camera.rotateY(degreesToRadians(-90));
 camera.rotateX(degreesToRadians(-40));
 
@@ -94,7 +93,7 @@ gltfLoader.load('./assets/airplane.glb', (gltf) => {
 
     let object = gltf.scene;
     object.rotateY(degreesToRadians(180));
-    object.scale.set(0.8, 0.8, 0.8)
+    object.scale.set(0.6, 0.6, 0.6)
     object.traverse(function (child) {
         if (child) {
             child.castShadow = true;
