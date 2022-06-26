@@ -5,7 +5,8 @@ import {
     InfoBox,
     degreesToRadians
 } from "../libs/util/util.js";
-import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js'
+import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js';
+import { CSG } from '../libs/other/CSGMesh.js'
 
 const container = document.getElementById('container');
 const stats = new Stats();
@@ -256,6 +257,72 @@ function missilesManager() {
 
 
 }
+
+ //create a cube and cylinder and intersect them
+ const cubeMesh = new THREE.Mesh(
+    new THREE.BoxGeometry(2, 4, 2),
+    new THREE.MeshPhongMaterial({ color: 0xff0000 })
+)
+
+const cubeMesh2 = new THREE.Mesh(
+    new THREE.BoxGeometry(2, 2, 4),
+    new THREE.MeshPhongMaterial({ color: 0xff0000 })
+)
+
+const cylinderMesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(4, 4, 4, 16, 2, false),
+    new THREE.MeshPhongMaterial({ color: 0x00ff00 })
+)
+
+cubeMesh.position.set(-5, 10, -6)
+   
+    cylinderMesh.position.set(1, 10, 1)
+   
+    
+    const cubeCSG = CSG.fromMesh(cubeMesh)
+    const cylinderCSG = CSG.fromMesh(cylinderMesh)
+
+    
+    cubeMesh2.position.set(-7,10,-7)
+    
+    const cube2CSG = CSG.fromMesh(cubeMesh2)
+    const cubeCrossIntersectCSG = cube2CSG.union(cubeCSG)
+    const cubeCrossIntersectMesh = CSG.toMesh(
+        cubeCrossIntersectCSG,
+        new THREE.Matrix4()
+        )
+        
+        cubeCrossIntersectMesh.position.set(1,11,1)
+        
+        cubeCrossIntersectMesh.rotateZ(degreesToRadians(90))
+        const crossCylinderIntersectCSG = cubeCrossIntersectCSG.subtract(cylinderCSG)
+        const crossCylinderIntersectMesh = CSG.toMesh(
+            crossCylinderIntersectCSG,
+            new THREE.Matrix4()
+        )
+        
+
+        crossCylinderIntersectMesh.material = new THREE.MeshPhongMaterial({
+            color: 'yellow'
+        })
+        
+        cubeCrossIntersectMesh.material = new THREE.MeshPhongMaterial({
+            color:'blue'
+        })
+        
+      
+        // crossCylinderIntersectMesh.rotateZ(degreesToRadians(70))
+        crossCylinderIntersectMesh.position.set(1,11,1)
+        // scene.add(crossCylinderIntersectMesh)
+        // scene.add(cubeMesh)
+        // scene.add(cubeMesh2)
+        
+        // scene.add(cubeCrossIntersectMesh)
+        scene.add(cylinderCSG)
+    
+
+
+
 
 function enimiesManager() {
 
