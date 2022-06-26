@@ -107,7 +107,6 @@ export function MenuGame(initialState) {
     button.style.border = "none";
     button.style.cursor = "pointer"
     button.onclick = () => {
-
         initialState();
     }
 

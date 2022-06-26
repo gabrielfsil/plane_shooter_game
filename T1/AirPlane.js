@@ -1,13 +1,14 @@
 import * as THREE from 'three';
 import KeyboardState from '../libs/util/KeyboardState.js';
+import { Bomb } from './Bomb.js';
 import { createBoundingBox } from './index.js';
-import { createShot } from './Shot.js';
+import { createShot, Shot } from './Shot.js';
 
 
 var keyboard = new KeyboardState();
 
 
-function createBoundingSpheres(sphere) {
+export function createBoundingSpheres(sphere) {
 
     let boundingSpheres = new THREE.Sphere(sphere.position, 0.6)
 
@@ -26,7 +27,7 @@ class Airplane {
         this.object.position.set(-170, 10, 0);
         this.bounding = createBoundingBox(this.object);
         this.breakdown = 0;
-
+        this.fall = true
 
         this.cadence = setInterval(() => {
             this.enabled = true
@@ -35,11 +36,29 @@ class Airplane {
         return this;
     }
 
+    drop() {
+        this.fall = true
+    }
+
 
     addBreadown(damage) {
 
         if (this.breakdown < 5) {
-            this.breakdown += damage
+            let health = document.getElementById("health")
+            if (health) {
+                health.value -= 20 * damage
+                this.breakdown += damage
+            }
+        }
+    }
+
+    restart(camera) {
+        this.fall = false;
+        this.breakdown = 0
+        this.object.position.set(camera.position.x + 40, 10, 0);
+        let health = document.getElementById("health")
+        if (health) {
+            health.value = 100
         }
     }
 
@@ -66,30 +85,46 @@ class Airplane {
                 if (keyboard.pressed("left")) this.object.translateZ(-speed)
             }
 
+        } else {
+
+            if (this.fall && this.object.position.y > 0) {
+
+                this.object.translateX(speed);
+                this.object.translateY(-speed * 0.2);
+                this.object.translateZ(-speed * 0.2);
+
+            }
         }
 
     }
 
-    shot(scene, shots, sphereShots) {
+    shot() {
 
         if (keyboard.pressed("ctrl")) {
 
             if (this.enabled) {
                 this.enabled = false
-                var sphere = createShot(this.object.position);
-                var boundingSphere = createBoundingSpheres(sphere);
 
-                scene.add(sphere)
-                shots.push(sphere)
-                sphereShots.push(boundingSphere);
+                var sphere = new Shot(this.object.position, new THREE.Vector3(1, 0, 0));
+
+                return sphere
             }
         }
 
-        if(keyboard.down("space")){
 
-            
+
+    }
+
+    launch() {
+
+        if (keyboard.down("space")) {
+
+
+            var bomb = new Bomb(this.object.position);
+
+            return bomb
+
         }
-
     }
 }
 
