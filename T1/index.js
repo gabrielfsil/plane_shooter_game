@@ -113,7 +113,7 @@ function genereteEnimies() {
             let indexMoviment = Math.floor(Math.random() * 4)
             var enemy = new Enemy(camera, dirMoviment[indexMoviment], speedEnimies);
 
-            if (indexMoviment === 1 || indexMoviment === 2) {
+            if (indexMoviment === 2) {
                 loader.load('./assets/airplane/scene.gltf', (gltf) => {
 
                     let object = gltf.scene;
@@ -123,6 +123,18 @@ function genereteEnimies() {
                         }
                     })
 
+                    enemy.object.add(object)
+                });
+            } else if (indexMoviment === 1) {
+                loader.load('./assets/teco-teco.glb', (gltf) => {
+
+                    let object = gltf.scene;
+                    object.traverse(function (child) {
+                        if (child) {
+                            child.castShadow = true;
+                        }
+                    })
+                    object.rotateY(degreesToRadians(-90))
                     enemy.object.add(object)
                 });
             } else {
@@ -219,7 +231,7 @@ function genereteHealth() {
             healths.push(health);
         }
 
-    }, 2000)
+    }, 10000)
 
 }
 
@@ -355,8 +367,10 @@ function animate() {
 
         for (var i = 0; i < healths.length; i++) {
             healths[i].bounding.copy(healths[i].object.geometry.boundingBox).applyMatrix4(healths[i].object.matrixWorld);
-            if(healths[i].object.position.x - camera.position.x < 0){
+            if (healths[i].object.position.x - camera.position.x < 0) {
                 removeHealth.push(i);
+            } else {
+                healths[i].moviment()
             }
         }
 

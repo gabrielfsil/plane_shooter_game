@@ -5,6 +5,7 @@ import { createBoundingBox } from "./index.js";
 class Missile {
     constructor([x1, y1, z1], [x2, y2, z2]) {
 
+        
         var missileGeometry = new THREE.CylinderGeometry(0.3, 0.3, 1, 10);
         var missileMaterial = new THREE.MeshLambertMaterial({ color: 'orange' });
         this.object = new THREE.Mesh(missileGeometry, missileMaterial);
