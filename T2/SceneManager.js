@@ -6,13 +6,12 @@ var speed = 0.3
 
 
 var vectorDirection = new THREE.Vector3(0, Math.cos(degreesToRadians(50)), -Math.sin(degreesToRadians(50)));
+var vectorDirection = new THREE.Vector3(0, Math.cos(degreesToRadians(50)), -Math.sin(degreesToRadians(50)));
 var controlPlane = -1;
 
-export function createGroundPlane(x = 0, y = 0, z = -0.02) {
-    let gcolor = "rgb(60, 30, 150)";
+export function createGroundPlane(gcolor = "rgb(86, 80, 71)", x = 0, y = 0, z = -0.02) {
 
-
-    var planeGeometry = new THREE.PlaneGeometry(400, 300, 20, 10);
+    var planeGeometry = new THREE.PlaneGeometry(400, 300, 120, 80);
     planeGeometry.translate(x, y, z);
     var planeMaterial = new THREE.MeshPhongMaterial({
         color: gcolor,
@@ -31,12 +30,13 @@ export function createGroundPlane(x = 0, y = 0, z = -0.02) {
     plane.rotateX(-Math.PI / 2);
 
     return plane;
+
 }
 
 let plane = createGroundPlane();
 let planeAux = createGroundPlane();
 
-export function update(camera, airplane, scene, light, animationOn) {
+export function update(camera, airplane, scene, light, animationOn, target) {
 
     if (controlPlane === -1) {
         scene.add(plane);
@@ -45,8 +45,9 @@ export function update(camera, airplane, scene, light, animationOn) {
     if (animationOn) {
         if (camera.position.x < (10 + (controlPlane * 200))) {
             camera.translateOnAxis(vectorDirection, speed)
-            airplane.translateY(-speed)
-            light.translateX(-speed)
+            airplane.translateX(speed)
+            light.translateX(speed)
+            target.translateX(speed)
 
         } else {
             controlPlane++;
@@ -106,7 +107,6 @@ export function MenuGame(initialState) {
     button.style.border = "none";
     button.style.cursor = "pointer"
     button.onclick = () => {
-        
         initialState();
     }
 
@@ -116,4 +116,54 @@ export function MenuGame(initialState) {
     document.body.appendChild(contentBox);
 
     return contentBox;
+}
+
+export function HealthBar() {
+    var content = document.createElement("div");
+    content.style.position = "absolute";
+    content.style.right = '0px'
+    content.style.top = '0px'
+    content.style.width = "200px";
+    content.style.height = "100px";
+    content.style.background = "black";
+    content.style.opacity = '0.6';
+
+    var title = document.createElement("h3");
+    title.style.fontFamily = "sans-serif"
+    title.style.fontSize = "18px";
+    title.style.textAlign = "left";
+    title.style.marginLeft = '16px';
+    title.style.color = 'white';
+
+    // var healthbar = document.createElement("div");
+    // healthbar.style.position = 'absolute';
+    // healthbar.style.left = 16px;
+    // healthbar.style.top = 50px;
+    // healthbar.style.width = '130px';
+    // healthbar.style.height = '20px';
+    // healthbar.style.border = 2px solid white
+ 
+    var progressbar = document.createElement("progress");
+    progressbar.style.width = '150px';
+    progressbar.style.height = '20px';
+    progressbar.style.marginLeft = '16px';
+    progressbar.style.borderRadius = '0';
+    progressbar.id = 'health';
+    progressbar.value = '100';
+    progressbar.max = '100';
+
+
+    
+
+    var textTitle = document.createTextNode("Health");
+
+    title.appendChild(textTitle);
+    content.appendChild(title);
+    content.appendChild(progressbar)
+
+
+
+    document.body.appendChild(content);
+    return content;
+
 }
