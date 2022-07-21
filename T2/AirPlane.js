@@ -43,7 +43,8 @@ class Airplane {
 
     addBreakdown(damage) {
 
-        if (keyboard.pressed("G")) {
+        // if (keyboard.pressed("G")) {
+        if (true) {
             console.log("Modo Furtivo")
         } else {
 

@@ -40,7 +40,7 @@ camera.rotateX(degreesToRadians(-40));
 let dirLight = new THREE.DirectionalLight("rgb(255,255,255)")
 
 var helperGeometry = new THREE.BoxGeometry(6, 6, 6);
-var helperMaterial = new THREE.MeshLambertMaterial({ color: "rgb(100,100,100)" });
+var helperMaterial = new THREE.MeshLambertMaterial({ color: "rgb(100,100,100)",  });
 
 var helper = new THREE.Mesh(helperGeometry, helperMaterial);
 

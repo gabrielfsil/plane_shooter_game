@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { degreesToRadians } from '../libs/util/util.js';
-
+import { Water } from '../build/jsm/objects/Water.js';
+import { Sky } from '../build/jsm/objects/Sky.js';
 
 var speed = 0.3
 
@@ -9,7 +10,52 @@ var vectorDirection = new THREE.Vector3(0, Math.cos(degreesToRadians(50)), -Math
 var vectorDirection = new THREE.Vector3(0, Math.cos(degreesToRadians(50)), -Math.sin(degreesToRadians(50)));
 var controlPlane = -1;
 
-export function createGroundPlane(gcolor = "rgb(86, 80, 71)", x = 0, y = 0, z = -0.02) {
+const waterGeometry = new THREE.PlaneGeometry(10000, 10000);
+
+var sun = new THREE.Vector3();
+const sky = new Sky();
+sky.scale.setScalar(10000);
+
+
+const skyUniforms = sky.material.uniforms;
+
+skyUniforms['turbidity'].value = 10;
+skyUniforms['rayleigh'].value = 2;
+skyUniforms['mieCoefficient'].value = 0.005;
+skyUniforms['mieDirectionalG'].value = 0.8;
+
+const parameters = {
+    elevation: 15,
+    azimuth: 180
+};
+
+const phi = THREE.MathUtils.degToRad(90 - parameters.elevation);
+const theta = THREE.MathUtils.degToRad(parameters.azimuth);
+
+sun.setFromSphericalCoords(1, phi, theta);
+
+sky.material.uniforms[ 'sunPosition' ].value.copy( sun );
+
+var water = new Water(
+    waterGeometry,
+    {
+        textureWidth: 512,
+        textureHeight: 512,
+        waterNormals: new THREE.TextureLoader().load('./assets/waternormals.jpg', function (texture) {
+
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+
+        }),
+        sunDirection: new THREE.Vector3(),
+        sunColor: 0xffffff,
+        waterColor: 0x001e0f,
+        distortionScale: 3.7,
+    }
+);
+
+water.rotation.x = - Math.PI / 2;
+
+export function createGroundPlane(gcolor = "rgb(250, 250, 250)", x = 0, y = 0, z = -0.02) {
 
     var planeGeometry = new THREE.PlaneGeometry(400, 300, 120, 80);
     planeGeometry.translate(x, y, z);
@@ -26,8 +72,8 @@ export function createGroundPlane(gcolor = "rgb(86, 80, 71)", x = 0, y = 0, z = 
 
     var plane = new THREE.Mesh(planeGeometry, planeMaterial);
     plane.receiveShadow = true;
-    plane.add(line);
     plane.rotateX(-Math.PI / 2);
+
 
     return plane;
 
@@ -38,9 +84,12 @@ let planeAux = createGroundPlane();
 
 export function update(camera, airplane, scene, light, animationOn, target) {
 
+    water.material.uniforms['time'].value += 1.0 / 60.0;
     if (controlPlane === -1) {
         scene.add(plane);
         controlPlane++;
+        scene.add(water);
+        scene.add(sky); 
     }
     if (animationOn) {
         if (camera.position.x < (10 + (controlPlane * 200))) {
@@ -142,7 +191,7 @@ export function HealthBar() {
     // healthbar.style.width = '130px';
     // healthbar.style.height = '20px';
     // healthbar.style.border = 2px solid white
- 
+
     var progressbar = document.createElement("progress");
     progressbar.style.width = '150px';
     progressbar.style.height = '20px';
@@ -153,7 +202,7 @@ export function HealthBar() {
     progressbar.max = '100';
 
 
-    
+
 
     var textTitle = document.createTextNode("Health");
 
