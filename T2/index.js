@@ -28,6 +28,7 @@ import { update, MenuGame, HealthBar } from './SceneManager.js';
 import { Enemy } from './Enimies.js';
 import { EnemiesGround } from './EnemiesGround.js';
 import { Health } from './Health.js';
+import { Bomb } from './Bomb.js';
 
 
 var scene = new THREE.Scene();
@@ -103,6 +104,8 @@ gltfLoader.load('./assets/airplane.glb', (gltf) => {
 });
 
 scene.add(airplane.object);
+
+
 
 function genereteEnimies() {
 
@@ -244,6 +247,7 @@ var loopHealth = genereteHealth();
 function initialState() {
     camera.position.set(camera.position.x, 40, 0);
     airplane.restart(camera)
+    removeEntity('explosion')
     animationOn = true;
 
     for (var i = 0; i < enemiesGround.length; i++) {
@@ -349,7 +353,27 @@ function gameOver() {
 function animation1(enimie) {
     if (!animationOn) {
         airplane.drop()
+        let loader = new GLTFLoader()
+        loader.load('./assets/teco-teco.glb', (gltf) => {
+            
+            let object = gltf.scene;
+            object.name = 'explosion'
+            object.scale.set(0.4, 0.4, 0.4)
+            object.traverse(function (child) {
+                if (child) {
+                    child.castShadow = true;
+                }
+            })
+
+            airplane.object.add(object);
+        });
     }
+}
+
+function removeEntity(name) {
+    var selectedObject = airplane.object.getObjectByName(name);
+    console.log(selectedObject)
+    scene.remove( selectedObject )
 }
 
 

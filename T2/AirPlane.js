@@ -3,7 +3,7 @@ import KeyboardState from '../libs/util/KeyboardState.js';
 import { Bomb } from './Bomb.js';
 import { createBoundingBox } from './index.js';
 import { createShot, Shot } from './Shot.js';
-
+import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js'
 
 var keyboard = new KeyboardState();
 
@@ -37,7 +37,8 @@ class Airplane {
     }
 
     drop() {
-        this.fall = true
+        this.fall = false
+        
     }
 
 
@@ -137,8 +138,25 @@ class Airplane {
 
 
             var bomb = new Bomb(this.object.position);
+            const upload = new GLTFLoader()
 
-            return bomb
+            upload.load('./assets/bomb.blend', (gltf) => {
+                let object = gltf.scene
+                object.rotateY(degreesToRadians(180));
+                console.log(bomb)
+                object.set(0.6, 0.6, 0.6)
+                object.traverse(function (child) {
+                    if (child) {
+                        child.castShadow = true;
+                    }
+                })
+                bomb.object.add(object)
+            })
+
+
+
+            return scene.add(bomb.object);
+
 
         }
     }
