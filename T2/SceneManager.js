@@ -2,7 +2,6 @@ import * as THREE from "three";
 import { degreesToRadians } from "../libs/util/util.js";
 import { Water } from "../build/jsm/objects/Water.js";
 import { Sky } from "../build/jsm/objects/Sky.js";
-import { ConvexGeometry } from "../build/jsm/geometries/ConvexGeometry.js";
 
 var speed = 0.3;
 
@@ -162,6 +161,7 @@ export function update(camera, airplane, scene, light, animationOn, target) {
       airplane.translateX(speed);
       light.translateX(speed);
       target.translateX(speed);
+      sky.translateX(speed)
     } else {
       controlPlane++;
       if (controlPlane % 2 === 0) {
