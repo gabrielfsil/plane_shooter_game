@@ -33,6 +33,7 @@ import { Health } from './Health.js';
 var scene = new THREE.Scene();
 var renderer = initRenderer();
 var camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+// camera.position.set(-300, 40, 0);
 camera.position.set(-200, 40, 0);
 camera.rotateY(degreesToRadians(-90));
 camera.rotateX(degreesToRadians(-40));
@@ -106,8 +107,8 @@ scene.add(airplane.object);
 
 function genereteEnimies() {
 
+    if (animationOn) {
     return setInterval(() => {
-        if (animationOn) {
             var speedEnimies = - Math.random() * 0.4 - 0.2
 
             let indexMoviment = Math.floor(Math.random() * 4)
@@ -153,14 +154,16 @@ function genereteEnimies() {
 
             scene.add(enemy.object);
             enimies.push(enemy);
-        }
-    }, 4000)
+        }, 4000)
+    }else{
+        clearInterval(loopEnimies)
+    }
 
 }
 
 function genereteEnemiesGround() {
+    if (animationOn) {
     return setInterval(() => {
-        if (animationOn) {
             var enimie = new EnemiesGround(camera);
             loader.load("./assets/toon_tank.glb", function (gltf) {
                 let object = gltf.scene;
@@ -176,8 +179,10 @@ function genereteEnemiesGround() {
             scene.add(enimie.object);
             enemiesGround.push(enimie);
 
-        }
-    }, 6000)
+        }, 6000)
+    }else{
+        clearInterval(loopEnemiesGround)
+    }
 }
 
 function genereteShotEnemies() {
@@ -355,7 +360,7 @@ function animation1(enimie) {
 
 function animate() {
 
-    animationOn = airplane.breakdown < 5;
+    // animationOn = airplane.breakdown < 5;
     var removeEnimies = [];
     var removeHealth = [];
 
@@ -407,7 +412,7 @@ function animate() {
         }
 
     } else {
-        gameOver()
+        // gameOver()
 
     }
 
