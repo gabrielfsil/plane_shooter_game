@@ -44,7 +44,8 @@ class Airplane {
 
     addBreakdown(damage) {
 
-        if (keyboard.pressed("G")) {
+        // if (keyboard.pressed("G")) {
+        if (true) {
             console.log("Modo Furtivo")
         } else {
 
@@ -104,13 +105,13 @@ class Airplane {
 
         } else {
 
-            if (this.fall && this.object.position.y > 0) {
+            // if (this.fall && this.object.position.y > 0) {
 
-                this.object.translateX(speed);
-                this.object.translateY(-speed * 0.2);
-                this.object.translateZ(-speed * 0.2);
+            //     this.object.translateX(speed);
+            //     this.object.translateY(-speed * 0.2);
+            //     this.object.translateZ(-speed * 0.2);
 
-            }
+            // }
         }
 
     }

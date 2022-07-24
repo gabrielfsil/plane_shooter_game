@@ -34,6 +34,7 @@ import { Bomb } from './Bomb.js';
 var scene = new THREE.Scene();
 var renderer = initRenderer();
 var camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+// camera.position.set(-300, 40, 0);
 camera.position.set(-200, 40, 0);
 camera.rotateY(degreesToRadians(-90));
 camera.rotateX(degreesToRadians(-40));
@@ -41,7 +42,7 @@ camera.rotateX(degreesToRadians(-40));
 let dirLight = new THREE.DirectionalLight("rgb(255,255,255)")
 
 var helperGeometry = new THREE.BoxGeometry(6, 6, 6);
-var helperMaterial = new THREE.MeshLambertMaterial({ color: "rgb(100,100,100)" });
+var helperMaterial = new THREE.MeshLambertMaterial({ color: "rgb(100,100,100)",  });
 
 var helper = new THREE.Mesh(helperGeometry, helperMaterial);
 
@@ -109,8 +110,8 @@ scene.add(airplane.object);
 
 function genereteEnimies() {
 
+    if (animationOn) {
     return setInterval(() => {
-        if (animationOn) {
             var speedEnimies = - Math.random() * 0.4 - 0.2
 
             let indexMoviment = Math.floor(Math.random() * 4)
@@ -156,14 +157,16 @@ function genereteEnimies() {
 
             scene.add(enemy.object);
             enimies.push(enemy);
-        }
-    }, 4000)
+        }, 4000)
+    }else{
+        clearInterval(loopEnimies)
+    }
 
 }
 
 function genereteEnemiesGround() {
+    if (animationOn) {
     return setInterval(() => {
-        if (animationOn) {
             var enimie = new EnemiesGround(camera);
             loader.load("./assets/toon_tank.glb", function (gltf) {
                 let object = gltf.scene;
@@ -179,8 +182,10 @@ function genereteEnemiesGround() {
             scene.add(enimie.object);
             enemiesGround.push(enimie);
 
-        }
-    }, 6000)
+        }, 6000)
+    }else{
+        clearInterval(loopEnemiesGround)
+    }
 }
 
 function genereteShotEnemies() {
@@ -379,7 +384,7 @@ function removeEntity(name) {
 
 function animate() {
 
-    animationOn = airplane.breakdown < 5;
+    // animationOn = airplane.breakdown < 5;
     var removeEnimies = [];
     var removeHealth = [];
 
@@ -431,7 +436,7 @@ function animate() {
         }
 
     } else {
-        gameOver()
+        // gameOver()
 
     }
 
