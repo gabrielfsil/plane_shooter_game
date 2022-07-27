@@ -4,6 +4,19 @@ import { Bomb } from './Bomb.js';
 import { createBoundingBox } from './index.js';
 import { createShot, Shot } from './Shot.js';
 import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js'
+// import { degreesToRadians, getMaxSize } from '../libs/util/util.js';
+//teste
+import {OBJLoader} from '../build/jsm/loaders/OBJLoader.js';
+import {MTLLoader} from '../build/jsm/loaders/MTLLoader.js';
+import {initRenderer, 
+    initDefaultSpotlight,
+    createGroundPlane,
+    SecondaryBox,
+    getMaxSize,        
+    onWindowResize, 
+    degreesToRadians,
+    } from "../libs/util/util.js";
+
 
 var keyboard = new KeyboardState();
 
@@ -16,6 +29,57 @@ export function createBoundingSpheres(sphere) {
 
 }
 
+//teste
+
+let assetManager = {
+    plane: null
+}
+
+loadOBJFile('./assets/airplanetest/', 'plane',3.5,0,true);
+
+function loadOBJFile(modelPath, modelName, desiredScale, angle, visibility){
+    var mtlLoader = new MTLLoader();
+    mtlLoader.setPath(modelPath);
+    mtlLoader.load(modelName + '.mtl', function (materials) {
+        materials.preload();
+
+        var objLoader = new OBJLoader();
+        objLoader.setMaterials(materials);
+        objLoader.setPath(modelPath);
+        objLoader.load( modelName + ".obj", function (obj) {
+            obj.visible = visibility;
+            obj.name = modelName;
+            obj.traverse(function (child)
+            {
+                child.castShadow = true;
+            });
+
+            obj.traverse( function(node)
+            {
+                if(node.material) ondevicemotion.material.side = THREE.DoubleSide;
+
+            });
+            var obj = normalizeAndRescale(obj, desiredScale);
+            var obj = fixPosition(obj);
+            obj.rotateY(degreesToRadians(angle));
+
+            scene.add (obj);
+            assetManager[modelName] = obj;
+        });
+    
+    });
+}
+
+// Escala 
+
+function normalizeAndRescale(obj, newScale)
+{
+    var scale = getMaxSize(obj);//utils.js
+    obj.scale.set(newScale * (1.0/scale),
+                  newScale * (1.0/scale),
+                  newScale * (1.0/scale));
+    return obj;
+}
 class Airplane {
 
     constructor() {
