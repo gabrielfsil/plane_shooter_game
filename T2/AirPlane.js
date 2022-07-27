@@ -35,7 +35,7 @@ let assetManager = {
     plane: null
 }
 
-loadOBJFile('./assets/airplanetest/', 'plane',3.5,0,true);
+// loadOBJFile('./assets/airplanetest/', 'plane',3.5,0,true);
 
 function loadOBJFile(modelPath, modelName, desiredScale, angle, visibility){
     var mtlLoader = new MTLLoader();
@@ -219,7 +219,7 @@ class Airplane {
 
 
 
-            return scene.add(bomb.object);
+            return bomb
 
 
         }
