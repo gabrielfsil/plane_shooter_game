@@ -64,14 +64,13 @@ export function createWater() {
 }
 
 function createObjectBorder() {
-
   var textureLoader = new THREE.TextureLoader();
-  var map = textureLoader.load("./assets/rocha-retangulo.jpg");
+  var map = textureLoader.load("./assets/asfalto.jpg");
   // Object Material
   var objectMaterial = new THREE.MeshBasicMaterial({ map: map });
 
   //   let convexGeometry = new ConvexGeometry(points);
-  var cubeGeometry = new THREE.BoxGeometry(400, 15, 10);
+  var cubeGeometry = new THREE.BoxGeometry(400, 400, 400);
 
   let object = new THREE.Mesh(cubeGeometry, objectMaterial);
   object.castShadow = true;
@@ -81,21 +80,20 @@ function createObjectBorder() {
 }
 
 function createObjectGround() {
+  var textureLoader = new THREE.TextureLoader();
+  var map = textureLoader.load("./assets/grass.jpg");
+  // Object Material
+  var objectMaterial = new THREE.MeshBasicMaterial({ map: map });
 
-    var textureLoader = new THREE.TextureLoader();
-    var map = textureLoader.load("./assets/grama-retangulo.png");
-    // Object Material
-    var objectMaterial = new THREE.MeshBasicMaterial({ map: map });
-  
-    //   let convexGeometry = new ConvexGeometry(points);
-    var cubeGeometry = new THREE.BoxGeometry(400, 80, 17);
-  
-    let object = new THREE.Mesh(cubeGeometry, objectMaterial);
-    object.castShadow = true;
-    object.visible = true;
-  
-    return object;
-  }
+  //   let convexGeometry = new ConvexGeometry(points);
+  var cubeGeometry = new THREE.BoxGeometry(400, 80, 17);
+
+  let object = new THREE.Mesh(cubeGeometry, objectMaterial);
+  object.castShadow = true;
+  object.visible = true;
+
+  return object;
+}
 
 export function createGroundPlane(
   gcolor = "rgb(250, 250, 250)",
@@ -105,7 +103,6 @@ export function createGroundPlane(
 ) {
   let borderLeft = createObjectBorder();
   let borderRight = createObjectBorder();
-
 
   let groundLeft = createObjectGround();
   let groundRight = createObjectGround();
@@ -129,13 +126,16 @@ export function createGroundPlane(
   var plane = new THREE.Mesh(planeGeometry, planeMaterial);
   plane.receiveShadow = true;
   plane.rotateX(-Math.PI / 2);
-
   borderLeft.position.set(x, y + 40, 0);
   borderRight.position.set(x, y - 40, 0);
   plane.add(borderRight);
   plane.add(borderLeft);
-  groundLeft.position.set(x, y + 82, 0);
-  groundRight.position.set(x, y - 82, 0);
+  borderRight.translateY(194)
+  borderRight.translateZ(-194)
+  borderLeft.translateY(-194)
+  borderLeft.translateZ(-194)
+  groundLeft.position.set(x, y + 80, 0);
+  groundRight.position.set(x, y - 80, 0);
   plane.add(groundRight);
   plane.add(groundLeft);
   return plane;
@@ -161,7 +161,7 @@ export function update(camera, airplane, scene, light, animationOn, target) {
       airplane.translateX(speed);
       light.translateX(speed);
       target.translateX(speed);
-      sky.translateX(speed)
+      sky.translateX(speed);
     } else {
       controlPlane++;
       if (controlPlane % 2 === 0) {
