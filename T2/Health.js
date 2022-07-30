@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { createBoundingBox } from './index.js';
 import { CSG } from '../libs/other/CSGMesh.js'
-import { degreesToRadians } from '../libs/util/util.js';
 
 
 class Health {

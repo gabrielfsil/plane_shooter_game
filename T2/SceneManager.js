@@ -38,6 +38,7 @@ let planeAux = createGroundPlane();
 
 export function update(camera, airplane, scene, light, animationOn, target) {
 
+    console.log(animationOn)
     if (controlPlane === -1) {
         scene.add(plane);
         controlPlane++;

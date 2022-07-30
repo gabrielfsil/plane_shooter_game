@@ -37,6 +37,21 @@ camera.position.set(-200, 40, 0);
 camera.rotateY(degreesToRadians(-90));
 camera.rotateX(degreesToRadians(-40));
 
+const listener = new THREE.AudioListener();
+camera.add(listener);
+
+const audioLoader = new THREE.AudioLoader();
+
+const backgroundSound = new THREE.Audio(listener);
+
+audioLoader.load("./assets/sounds/sampleMusic.mp3", function(buffer){
+  backgroundSound.setBuffer(buffer);
+  backgroundSound.setLoop(true);
+  backgroundSound.setVolume(0.4);
+  // backgroundSound.play()
+})
+
+
 let dirLight = new THREE.DirectionalLight("rgb(255,255,255)");
 
 var helperGeometry = new THREE.BoxGeometry(6, 6, 6);
@@ -76,7 +91,7 @@ scene.add(target);
 
 import { OBJLoader } from "../build/jsm/loaders/OBJLoader.js";
 import { MTLLoader } from "../build/jsm/loaders/MTLLoader.js";
-import { getMaxSize, onWindowResize } from "../libs/util/util.js";
+import { getMaxSize } from "../libs/util/util.js";
 
 export function createBoundingSpheres(sphere) {
   let boundingSpheres = new THREE.Sphere(sphere.position, 0.6);
@@ -88,10 +103,11 @@ export function createBoundingSpheres(sphere) {
 
 let assetManager = {
   plane: null,
+  tank: null
 };
 
 var airplane = new Airplane();
-loadOBJFile("./assets/airplanetest/", "plane", 3.5, 0, true);
+loadOBJFile("./assets/airplanetest/", "plane", 10, 0, true, airplane.object);
 
 function fixPosition(obj)
 {
@@ -104,7 +120,7 @@ function fixPosition(obj)
   return obj;
 }
 
-function loadOBJFile(modelPath, modelName, desiredScale, angle, visibility) {
+function loadOBJFile(modelPath, modelName, desiredScale, angle, visibility, object) {
   var mtlLoader = new MTLLoader();
   mtlLoader.setPath(modelPath);
   mtlLoader.load(modelName + ".mtl", function (materials) {
@@ -128,7 +144,8 @@ function loadOBJFile(modelPath, modelName, desiredScale, angle, visibility) {
       var obj = fixPosition(obj);
       obj.rotateY(degreesToRadians(angle));
 
-      airplane.object.add(obj);
+      object.add(obj);
+
       assetManager[modelName] = obj;
     });
   });
@@ -229,21 +246,23 @@ function genereteEnemiesGround() {
   return setInterval(() => {
     if (animationOn) {
       var enimie = new EnemiesGround(camera);
-      loader.load(
-        "./assets/toon_tank.glb",
-        function (gltf) {
-          let object = gltf.scene;
-          object.traverse(function (child) {
-            if (child) {
-              child.castShadow = true;
-            }
-          });
-          object.rotateY(degreesToRadians(-90));
-          enimie.object.add(object);
-        },
-        null,
-        null
-      );
+      // loader.load(
+      //   "./assets/toon_tank.glb",
+      //   function (gltf) {
+      //     let object = gltf.scene;
+      //     object.traverse(function (child) {
+      //       if (child) {
+      //         child.castShadow = true;
+      //       }
+      //     });
+      //     object.rotateY(degreesToRadians(-90));
+      //     enimie.object.add(object);
+      //   },
+      //   null,
+      //   null
+      // );
+      loadOBJFile('./assets/tank/', 'tank', 13, -90, true, enimie.object);
+
 
       scene.add(enimie.object);
       enemiesGround.push(enimie);
@@ -309,7 +328,7 @@ var loopHealth = genereteHealth();
 function initialState() {
   camera.position.set(camera.position.x, 40, 0);
   airplane.restart(camera);
-  removeEntity("explosion");
+  // removeEntity("explosion");
   animationOn = true;
 
   for (var i = 0; i < enemiesGround.length; i++) {
@@ -402,30 +421,17 @@ function gameOver() {
 function animation1(enimie) {
   if (!animationOn) {
     airplane.drop();
-    let loader = new GLTFLoader();
-    loader.load("./assets/teco-teco.glb", (gltf) => {
-      let object = gltf.scene;
-      object.name = "explosion";
-      object.scale.set(0.4, 0.4, 0.4);
-      object.traverse(function (child) {
-        if (child) {
-          child.castShadow = true;
-        }
-      });
-
-      airplane.object.add(object);
-    });
   }
 }
 
-function removeEntity(name) {
-  var selectedObject = airplane.object.getObjectByName(name);
-  console.log(selectedObject);
-  scene.remove(selectedObject);
-}
+// function removeEntity(name) {
+//   var selectedObject = airplane.object.getObjectByName(name);
+//   console.log(selectedObject);
+//   scene.remove(selectedObject);
+// }
 
 function animate() {
-  animationOn = airplane.breakdown < 5;
+  // animationOn = airplane.breakdown < 5;
   var removeEnimies = [];
   var removeHealth = [];
 
@@ -481,8 +487,9 @@ function animate() {
       scene.remove(healths[removeHealth[i]].object);
       healths.splice(removeHealth[i], 1);
     }
-  } else {
-    gameOver();
+  }
+    if(airplane.breakdown >= 5) {
+      gameOver();
   }
 }
 
@@ -641,6 +648,27 @@ controls.add("Left arrow move to left");
 controls.add("Right arrow move to right");
 controls.add("Space or Ctrl dispatch shot");
 controls.show();
+
+
+
+export function pause() {
+  if(animationOn) {
+    clearInterval(loopEnimies);
+    clearInterval(loopEnemiesGround);
+    clearInterval(loopMissiles);
+    clearInterval(loopShotEnemies);
+    clearInterval(loopHealth);
+    animationOn = false;
+  } else {
+    initialState()
+  }
+
+}
+
+
+
+
+     
 
 render();
 function render() {

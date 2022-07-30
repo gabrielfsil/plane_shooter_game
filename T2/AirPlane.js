@@ -1,21 +1,17 @@
 import * as THREE from 'three';
 import KeyboardState from '../libs/util/KeyboardState.js';
 import { Bomb } from './Bomb.js';
-import { createBoundingBox } from './index.js';
-import { createShot, Shot } from './Shot.js';
+import { createBoundingBox, pause } from './index.js';
+import { Shot } from './Shot.js';
 import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js'
 // import { degreesToRadians, getMaxSize } from '../libs/util/util.js';
 //teste
-import {OBJLoader} from '../build/jsm/loaders/OBJLoader.js';
-import {MTLLoader} from '../build/jsm/loaders/MTLLoader.js';
-import {initRenderer, 
-    initDefaultSpotlight,
-    createGroundPlane,
-    SecondaryBox,
-    getMaxSize,        
-    onWindowResize, 
+import { OBJLoader } from '../build/jsm/loaders/OBJLoader.js';
+import { MTLLoader } from '../build/jsm/loaders/MTLLoader.js';
+import {
+    getMaxSize,
     degreesToRadians,
-    } from "../libs/util/util.js";
+} from "../libs/util/util.js";
 
 
 var keyboard = new KeyboardState();
@@ -37,7 +33,7 @@ let assetManager = {
 
 // loadOBJFile('./assets/airplanetest/', 'plane',3.5,0,true);
 
-function loadOBJFile(modelPath, modelName, desiredScale, angle, visibility){
+function loadOBJFile(modelPath, modelName, desiredScale, angle, visibility) {
     var mtlLoader = new MTLLoader();
     mtlLoader.setPath(modelPath);
     mtlLoader.load(modelName + '.mtl', function (materials) {
@@ -46,38 +42,35 @@ function loadOBJFile(modelPath, modelName, desiredScale, angle, visibility){
         var objLoader = new OBJLoader();
         objLoader.setMaterials(materials);
         objLoader.setPath(modelPath);
-        objLoader.load( modelName + ".obj", function (obj) {
+        objLoader.load(modelName + ".obj", function (obj) {
             obj.visible = visibility;
             obj.name = modelName;
-            obj.traverse(function (child)
-            {
+            obj.traverse(function (child) {
                 child.castShadow = true;
             });
 
-            obj.traverse( function(node)
-            {
-                if(node.material) ondevicemotion.material.side = THREE.DoubleSide;
+            obj.traverse(function (node) {
+                if (node.material) ondevicemotion.material.side = THREE.DoubleSide;
 
             });
             var obj = normalizeAndRescale(obj, desiredScale);
             var obj = fixPosition(obj);
             obj.rotateY(degreesToRadians(angle));
 
-            scene.add (obj);
+            scene.add(obj);
             assetManager[modelName] = obj;
         });
-    
+
     });
 }
 
 // Escala 
 
-function normalizeAndRescale(obj, newScale)
-{
+function normalizeAndRescale(obj, newScale) {
     var scale = getMaxSize(obj);//utils.js
-    obj.scale.set(newScale * (1.0/scale),
-                  newScale * (1.0/scale),
-                  newScale * (1.0/scale));
+    obj.scale.set(newScale * (1.0 / scale),
+        newScale * (1.0 / scale),
+        newScale * (1.0 / scale));
     return obj;
 }
 class Airplane {
@@ -102,7 +95,8 @@ class Airplane {
 
     drop() {
         this.fall = false
-        
+        console.log('testando')
+
     }
 
 
@@ -136,7 +130,7 @@ class Airplane {
     restart(camera) {
         this.fall = false;
         this.breakdown = 0
-        this.object.position.set(camera.position.x + 40, 10, 0);
+        this.object.position.set(this.object.position.x, 10, 0);
         let health = document.getElementById("health")
         if (health) {
             health.value = 100
@@ -146,36 +140,46 @@ class Airplane {
     moviment(animationOn, camera) {
 
         keyboard.update();
+        // var pausar = pause()
 
         var speed = 0.7;
 
-        if (animationOn) {
+        if (keyboard.down("P")) {
+            pause()
+        } 
+            if (animationOn) {
 
-            if (this.object.position.x - camera.position.x < 80) {
-                if (keyboard.pressed("up")) this.object.translateX(speed)
-            }
-            if (this.object.position.x - camera.position.x > 20) {
-                if (keyboard.pressed("down")) this.object.translateX(-speed);
-            }
-            if (this.object.position.z - camera.position.z < 28) {
 
-                if (keyboard.pressed("right")) this.object.translateZ(speed);
-            }
-            if (this.object.position.z - camera.position.z > -28) {
+                if (this.object.position.x - camera.position.x < 80) {
+                    if (keyboard.pressed("up")) this.object.translateX(speed)
+                }
+                if (this.object.position.x - camera.position.x > 20) {
+                    if (keyboard.pressed("down")) this.object.translateX(-speed);
+                }
+                if (this.object.position.z - camera.position.z < 28) {
 
-                if (keyboard.pressed("left")) this.object.translateZ(-speed)
-            }
+                    if (keyboard.pressed("right")) this.object.translateZ(speed);
+                }
+                if (this.object.position.z - camera.position.z > -28) {
 
-        } else {
-
-            if (this.fall && this.object.position.y > 0) {
-
-                this.object.translateX(speed);
-                this.object.translateY(-speed * 0.2);
-                this.object.translateZ(-speed * 0.2);
+                    if (keyboard.pressed("left")) this.object.translateZ(-speed)
+                }
 
             }
-        }
+                if(this.breakdown >= 5) {
+
+                    if (this.fall && this.object.position.y > 0) {
+    
+                        this.object.translateX(speed);
+                        this.object.translateY(-speed * 0.2);
+                        this.object.translateZ(-speed * 0.2);
+    
+                    }
+                }
+
+
+        // }
+
 
     }
 
