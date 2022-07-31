@@ -46,8 +46,8 @@ const audioLoader = new THREE.AudioLoader();
 const backgroundSound = new THREE.Audio(listener);
 scene.add(backgroundSound)
 
-audioLoader.load('./assets/sounds/ActofWar.mp3',async function (buffer) {
-  await backgroundSound.setBuffer(buffer);
+audioLoader.load('./assets/sounds/ActofWar.mp3',function (buffer) {
+  backgroundSound.setBuffer(buffer);
   backgroundSound.setLoop(true);
   backgroundSound.setVolume(0.4);
   backgroundSound.play();
