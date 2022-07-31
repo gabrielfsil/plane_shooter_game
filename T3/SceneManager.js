@@ -42,6 +42,7 @@ sun.setFromSphericalCoords(1, phi, theta);
 
 sky.material.uniforms["sunPosition"].value.copy(sun);
 
+
 export function createWater() {
   var water = new Water(waterGeometry, {
     textureWidth: 512,
@@ -59,7 +60,7 @@ export function createWater() {
   });
 
   water.rotation.x = -Math.PI / 2;
-
+  water.position.y = 1;
   return water;
 }
 
@@ -130,10 +131,10 @@ export function createGroundPlane(
   borderRight.position.set(x, y - 40, 0);
   plane.add(borderRight);
   plane.add(borderLeft);
-  borderRight.translateY(194)
-  borderRight.translateZ(-194)
-  borderLeft.translateY(-194)
-  borderLeft.translateZ(-194)
+  borderRight.translateY(194);
+  borderRight.translateZ(-194);
+  borderLeft.translateY(-194);
+  borderLeft.translateZ(-194);
   groundLeft.position.set(x, y + 80, 0);
   groundRight.position.set(x, y - 80, 0);
   plane.add(groundRight);
@@ -166,13 +167,13 @@ export function update(camera, airplane, scene, light, animationOn, target) {
       controlPlane++;
       if (controlPlane % 2 === 0) {
         planeAux.position.set(controlPlane * 200, 0, -0.02);
-        waterAux.position.set(controlPlane * 200, 0, -0.02);
+        waterAux.position.set(controlPlane * 200, 1, -0.02);
         scene.add(planeAux);
         scene.add(waterAux);
       } else {
         plane.position.set(controlPlane * 200, 0, -0.02);
         scene.add(plane);
-        water.position.set(controlPlane * 200, 0, -0.02);
+        water.position.set(controlPlane * 200, 1, -0.02);
         scene.add(water);
       }
     }
