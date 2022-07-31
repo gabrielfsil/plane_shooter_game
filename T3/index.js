@@ -16,10 +16,10 @@ var bombs = [];
 var healths = [];
 
 var dirMoviment = ["horizontal", "vertical", "diagonal", "arco"];
-var animationOn = true;
+var animationOn = false;
 
 import { Airplane } from "./AirPlane.js";
-import { update, MenuGame, HealthBar } from "./SceneManager.js";
+import { update, MenuGame, HealthBar, StartGame } from "./SceneManager.js";
 import { Enemy } from "./Enimies.js";
 import { EnemiesGround } from "./EnemiesGround.js";
 import { Health } from "./Health.js";
@@ -33,6 +33,7 @@ var camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
+// camera.position.set(-300, 40, 0);
 camera.position.set(-200, 40, 0);
 camera.rotateY(degreesToRadians(-90));
 camera.rotateX(degreesToRadians(-40));
@@ -44,13 +45,12 @@ const audioLoader = new THREE.AudioLoader();
 
 const backgroundSound = new THREE.Audio(listener);
 
-audioLoader.load("./assets/sounds/sampleMusic.mp3", function(buffer){
+audioLoader.load("./assets/sounds/sampleMusic.mp3", function (buffer) {
   backgroundSound.setBuffer(buffer);
   backgroundSound.setLoop(true);
   backgroundSound.setVolume(0.2);
-  backgroundSound.play()
-})
-
+  backgroundSound.play();
+});
 
 let dirLight = new THREE.DirectionalLight("rgb(255,255,255)");
 
@@ -103,24 +103,28 @@ export function createBoundingSpheres(sphere) {
 
 let assetManager = {
   plane: null,
-  tank: null
+  tank: null,
 };
 
 var airplane = new Airplane();
 loadOBJFile("./assets/airplanetest/", "plane", 10, 0, true, airplane.object);
 
-function fixPosition(obj)
-{
+function fixPosition(obj) {
   // Fix position of the object over the ground plane
-  var box = new THREE.Box3().setFromObject( obj );
-  if(box.min.y > 0)
-    obj.translateY(-box.min.y);
-  else
-    obj.translateY(-1*box.min.y);
+  var box = new THREE.Box3().setFromObject(obj);
+  if (box.min.y > 0) obj.translateY(-box.min.y);
+  else obj.translateY(-1 * box.min.y);
   return obj;
 }
 
-function loadOBJFile(modelPath, modelName, desiredScale, angle, visibility, object) {
+function loadOBJFile(
+  modelPath,
+  modelName,
+  desiredScale,
+  angle,
+  visibility,
+  object
+) {
   var mtlLoader = new MTLLoader();
   mtlLoader.setPath(modelPath);
   mtlLoader.load(modelName + ".mtl", function (materials) {
@@ -137,7 +141,6 @@ function loadOBJFile(modelPath, modelName, desiredScale, angle, visibility, obje
       });
 
       obj.traverse(function (node) {
-        
         if (node.material) node.material.side = THREE.DoubleSide;
       });
       var obj = normalizeAndRescale(obj, desiredScale);
@@ -171,26 +174,11 @@ export function createBoundingBox(box) {
   return boundingBox;
 }
 
-const gltfLoader = new GLTFLoader();
-
-// gltfLoader.load('./assets/airplane.glb', (gltf) => {
-
-//     let object = gltf.scene;
-//     object.rotateY(degreesToRadians(180));
-//     object.scale.set(0.6, 0.6, 0.6)
-//     object.traverse(function (child) {
-//         if (child) {
-//             child.castShadow = true;
-//         }
-//     })
-//     airplane.object.add(object);
-// });
-
 scene.add(airplane.object);
 
 function genereteEnimies() {
-  return setInterval(() => {
-    if (animationOn) {
+  if (animationOn) {
+    return setInterval(() => {
       var speedEnimies = -Math.random() * 0.4 - 0.2;
 
       let indexMoviment = Math.floor(Math.random() * 4);
@@ -238,36 +226,23 @@ function genereteEnimies() {
 
       scene.add(enemy.object);
       enimies.push(enemy);
-    }
-  }, 4000);
+    }, 4000);
+  } else {
+    clearInterval(loopEnimies);
+  }
 }
 
 function genereteEnemiesGround() {
-  return setInterval(() => {
-    if (animationOn) {
+  if (animationOn) {
+    return setInterval(() => {
       var enimie = new EnemiesGround(camera);
-      // loader.load(
-      //   "./assets/toon_tank.glb",
-      //   function (gltf) {
-      //     let object = gltf.scene;
-      //     object.traverse(function (child) {
-      //       if (child) {
-      //         child.castShadow = true;
-      //       }
-      //     });
-      //     object.rotateY(degreesToRadians(-90));
-      //     enimie.object.add(object);
-      //   },
-      //   null,
-      //   null
-      // );
-      loadOBJFile('./assets/tank/', 'tank', 13, -90, true, enimie.object);
-
-
+      loadOBJFile("./assets/tank/", "tank", 13, -90, true, enimie.object);
       scene.add(enimie.object);
       enemiesGround.push(enimie);
-    }
-  }, 6000);
+    }, 6000);
+  } else {
+    clearInterval(loopEnemiesGround);
+  }
 }
 
 function genereteShotEnemies() {
@@ -328,7 +303,6 @@ var loopHealth = genereteHealth();
 function initialState() {
   camera.position.set(camera.position.x, 40, 0);
   airplane.restart(camera);
-  // removeEntity("explosion");
   animationOn = true;
 
   for (var i = 0; i < enemiesGround.length; i++) {
@@ -355,7 +329,14 @@ function initialState() {
   healthbar.style.display = "block";
 }
 
+function startGame() {
+  animationOn = true;
+  start.style.display = "none";
+  initialState();
+}
+
 var menu = MenuGame(initialState);
+var start = StartGame(startGame);
 
 function missilesManager() {
   for (var i = 0; i < missiles.length; i++) {
@@ -424,12 +405,6 @@ function animation1(enimie) {
   }
 }
 
-// function removeEntity(name) {
-//   var selectedObject = airplane.object.getObjectByName(name);
-//   console.log(selectedObject);
-//   scene.remove(selectedObject);
-// }
-
 function animate() {
   // animationOn = airplane.breakdown < 5;
   var removeEnimies = [];
@@ -488,8 +463,8 @@ function animate() {
       healths.splice(removeHealth[i], 1);
     }
   }
-    if(airplane.breakdown >= 5) {
-      gameOver();
+  if (airplane.breakdown >= 5) {
+    gameOver();
   }
 }
 
@@ -612,27 +587,37 @@ function collisionManager() {
   }
 
   for (var i = 0; i < removeEnimies.length; i++) {
-    scene.remove(enimies[removeEnimies[i]].object);
+    if (enimies[removeEnimies[i]]) {
+      scene.remove(enimies[removeEnimies[i]].object);
+    }
     enimies.splice(removeEnimies[i], 1);
   }
 
   for (var i = 0; i < removeMissiles.length; i++) {
-    scene.remove(missiles[removeMissiles[i]].object);
+    if (missiles[removeMissiles[i]]) {
+      scene.remove(missiles[removeMissiles[i]].object);
+    }
     missiles.splice(removeMissiles[i], 1);
   }
 
   for (var i = 0; i < removeShots.length; i++) {
-    scene.remove(shots[removeShots[i]].object);
+    if (shots[removeShots[i]]) {
+      scene.remove(shots[removeShots[i]].object);
+    }
     shots.splice(removeShots[i], 1);
   }
 
   for (var i = 0; i < removeEnemiesShots.length; i++) {
-    scene.remove(enemiesShots[removeEnemiesShots[i]].object);
+    if (enemiesShots[removeEnemiesShots[i]]) {
+      scene.remove(enemiesShots[removeEnemiesShots[i]].object);
+    }
     enemiesShots.splice(removeEnemiesShots[i], 1);
   }
 
   for (var i = 0; i < removeHealth.length; i++) {
-    scene.remove(healths[removeHealth[i]].object);
+    if (healths[removeHealth[i]]) {
+      scene.remove(healths[removeHealth[i]].object);
+    }
     healths.splice(removeHealth[i], 1);
   }
 }
@@ -649,10 +634,8 @@ controls.add("Right arrow move to right");
 controls.add("Space or Ctrl dispatch shot");
 controls.show();
 
-
-
 export function pause() {
-  if(animationOn) {
+  if (animationOn) {
     clearInterval(loopEnimies);
     clearInterval(loopEnemiesGround);
     clearInterval(loopMissiles);
@@ -660,15 +643,9 @@ export function pause() {
     clearInterval(loopHealth);
     animationOn = false;
   } else {
-    initialState()
+    initialState();
   }
-
 }
-
-
-
-
-     
 
 render();
 function render() {

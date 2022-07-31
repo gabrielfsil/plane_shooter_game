@@ -3,12 +3,7 @@ import KeyboardState from "../libs/util/KeyboardState.js";
 import { Bomb } from "./Bomb.js";
 import { createBoundingBox, pause } from "./index.js";
 import { Shot } from "./Shot.js";
-import { GLTFLoader } from "../build/jsm/loaders/GLTFLoader.js";
-// import { degreesToRadians, getMaxSize } from '../libs/util/util.js';
-//teste
-import { OBJLoader } from "../build/jsm/loaders/OBJLoader.js";
-import { MTLLoader } from "../build/jsm/loaders/MTLLoader.js";
-import { getMaxSize, degreesToRadians } from "../libs/util/util.js";
+import { degreesToRadians } from "../libs/util/util.js";
 
 var keyboard = new KeyboardState();
 
@@ -18,54 +13,6 @@ export function createBoundingSpheres(sphere) {
   return boundingSpheres;
 }
 
-//teste
-
-let assetManager = {
-  plane: null,
-};
-
-// loadOBJFile('./assets/airplanetest/', 'plane',3.5,0,true);
-
-function loadOBJFile(modelPath, modelName, desiredScale, angle, visibility) {
-  var mtlLoader = new MTLLoader();
-  mtlLoader.setPath(modelPath);
-  mtlLoader.load(modelName + ".mtl", function (materials) {
-    materials.preload();
-
-    var objLoader = new OBJLoader();
-    objLoader.setMaterials(materials);
-    objLoader.setPath(modelPath);
-    objLoader.load(modelName + ".obj", function (obj) {
-      obj.visible = visibility;
-      obj.name = modelName;
-      obj.traverse(function (child) {
-        child.castShadow = true;
-      });
-
-      obj.traverse(function (node) {
-        if (node.material) ondevicemotion.material.side = THREE.DoubleSide;
-      });
-      var obj = normalizeAndRescale(obj, desiredScale);
-      var obj = fixPosition(obj);
-      obj.rotateY(degreesToRadians(angle));
-
-      scene.add(obj);
-      assetManager[modelName] = obj;
-    });
-  });
-}
-
-// Escala
-
-function normalizeAndRescale(obj, newScale) {
-  var scale = getMaxSize(obj); //utils.js
-  obj.scale.set(
-    newScale * (1.0 / scale),
-    newScale * (1.0 / scale),
-    newScale * (1.0 / scale)
-  );
-  return obj;
-}
 class Airplane {
   constructor() {
     var airPlaneGeometry = new THREE.CylinderGeometry(3, 3, 4, 20);
@@ -80,6 +27,7 @@ class Airplane {
     this.bounding = createBoundingBox(this.object);
     this.breakdown = 0;
     this.fall = true;
+    this.gameplay = false;
 
     this.cadence = setInterval(() => {
       this.enabled = true;
@@ -90,11 +38,10 @@ class Airplane {
 
   drop() {
     this.fall = false;
-    console.log("testando");
   }
 
   addBreakdown(damage) {
-    if (keyboard.pressed("G")) {
+    if (this.gameplay) {
       console.log("Modo Furtivo");
     } else {
       if (this.breakdown < 5) {
@@ -136,6 +83,13 @@ class Airplane {
     if (keyboard.down("P")) {
       pause();
     }
+
+    if (keyboard.down("G")) {
+      this.gameplay = !this.gameplay;
+    }
+
+    var speed = 0.7;
+    this.object.position.y = 10;
     if (animationOn) {
       if (this.object.position.x - camera.position.x < 80) {
         if (keyboard.pressed("up")) this.object.translateX(speed);
@@ -145,25 +99,44 @@ class Airplane {
       }
       if (this.object.position.z - camera.position.z < 28) {
         if (keyboard.pressed("right")) {
+          if (this.object.rotation.x < degreesToRadians(45)) {
+            this.object.rotateX(degreesToRadians(speed * 2));
+          }
           this.object.translateZ(speed);
+        } else {
+          if (this.object.rotation.x > 0) {
+            this.object.rotateX(degreesToRadians(-speed * 3));
+          }
         }
       }
       if (this.object.position.z - camera.position.z > -28) {
-        if (keyboard.pressed("left")) this.object.translateZ(-speed);
+        if (keyboard.pressed("left")) {
+          if (this.object.rotation.x > degreesToRadians(-45)) {
+            this.object.rotateX(degreesToRadians(-speed * 2));
+          }
+          this.object.translateZ(-speed);
+        } else {
+          if (this.object.rotation.x < 0) {
+            this.object.rotateX(degreesToRadians(speed * 3));
+          }
+        }
       }
-    }
-    if (this.breakdown >= 5) {
-      if (this.fall && this.object.position.y > 0) {
+    } else {
+      if (this.fall && this.object.position.y > 0 && this.breakdown >= 5) {
         this.object.translateX(speed);
         this.object.translateY(-speed * 0.2);
         this.object.translateZ(-speed * 0.2);
       }
     }
-
-    // }
   }
 
   shot() {
+    if (keyboard.down("ctrl")) {
+      var sphere = new Shot(this.object.position, new THREE.Vector3(1, 0, 0));
+
+      return sphere;
+    }
+
     if (keyboard.pressed("ctrl")) {
       if (this.enabled) {
         this.enabled = false;
