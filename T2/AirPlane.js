@@ -158,7 +158,11 @@ class Airplane {
                 }
                 if (this.object.position.z - camera.position.z < 28) {
 
-                    if (keyboard.pressed("right")) this.object.translateZ(speed);
+                    if (keyboard.pressed("right")){
+                        this.object.translateZ(speed);
+                        
+                        this.object.rotateX(degreesToRadians(15))
+                    }
                 }
                 if (this.object.position.z - camera.position.z > -28) {
 
