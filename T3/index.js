@@ -1,9 +1,9 @@
-import * as THREE from "three";
-import Stats from "../build/jsm/libs/stats.module.js";
-import { initRenderer, InfoBox, degreesToRadians } from "../libs/util/util.js";
-import { GLTFLoader } from "../build/jsm/loaders/GLTFLoader.js";
+import * as THREE from 'three';
+import Stats from '../build/jsm/libs/stats.module.js';
+import { initRenderer, InfoBox, degreesToRadians } from '../libs/util/util.js';
+import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js';
 
-const container = document.getElementById("container");
+const container = document.getElementById('container');
 const stats = new Stats();
 container.appendChild(stats.dom);
 
@@ -15,15 +15,15 @@ var enemiesShots = [];
 var bombs = [];
 var healths = [];
 
-var dirMoviment = ["horizontal", "vertical", "diagonal", "arco"];
+var dirMoviment = ['horizontal', 'vertical', 'diagonal', 'arco'];
 var animationOn = false;
 
-import { Airplane } from "./AirPlane.js";
-import { update, MenuGame, HealthBar, StartGame } from "./SceneManager.js";
-import { Enemy } from "./Enimies.js";
-import { EnemiesGround } from "./EnemiesGround.js";
-import { Health } from "./Health.js";
-import { Bomb } from "./Bomb.js";
+import { Airplane } from './AirPlane.js';
+import { update, MenuGame, HealthBar, StartGame } from './SceneManager.js';
+import { Enemy } from './Enimies.js';
+import { EnemiesGround } from './EnemiesGround.js';
+import { Health } from './Health.js';
+import { Bomb } from './Bomb.js';
 
 var scene = new THREE.Scene();
 var renderer = initRenderer();
@@ -45,18 +45,18 @@ const audioLoader = new THREE.AudioLoader();
 
 const backgroundSound = new THREE.Audio(listener);
 
-audioLoader.load("./assets/sounds/sampleMusic.mp3", function (buffer) {
+audioLoader.load('./assets/sounds/ActofWar.mp3', function (buffer) {
   backgroundSound.setBuffer(buffer);
   backgroundSound.setLoop(true);
-  backgroundSound.setVolume(0.2);
+  backgroundSound.setVolume(0.4);
   backgroundSound.play();
 });
 
-let dirLight = new THREE.DirectionalLight("rgb(255,255,255)");
+let dirLight = new THREE.DirectionalLight('rgb(255,255,255)');
 
 var helperGeometry = new THREE.BoxGeometry(6, 6, 6);
 var helperMaterial = new THREE.MeshLambertMaterial({
-  color: "rgb(100,100,100)",
+  color: 'rgb(100,100,100)',
 });
 
 var helper = new THREE.Mesh(helperGeometry, helperMaterial);
@@ -89,9 +89,9 @@ target.position.set(-120, -10, -0);
 dirLight.target = target;
 scene.add(target);
 
-import { OBJLoader } from "../build/jsm/loaders/OBJLoader.js";
-import { MTLLoader } from "../build/jsm/loaders/MTLLoader.js";
-import { getMaxSize } from "../libs/util/util.js";
+import { OBJLoader } from '../build/jsm/loaders/OBJLoader.js';
+import { MTLLoader } from '../build/jsm/loaders/MTLLoader.js';
+import { getMaxSize } from '../libs/util/util.js';
 
 export function createBoundingSpheres(sphere) {
   let boundingSpheres = new THREE.Sphere(sphere.position, 0.6);
@@ -107,7 +107,7 @@ let assetManager = {
 };
 
 var airplane = new Airplane();
-loadOBJFile("./assets/airplanetest/", "plane", 10, 0, true, airplane.object);
+loadOBJFile('./assets/airplanetest/', 'plane', 10, 0, true, airplane.object);
 
 function fixPosition(obj) {
   // Fix position of the object over the ground plane
@@ -127,13 +127,13 @@ function loadOBJFile(
 ) {
   var mtlLoader = new MTLLoader();
   mtlLoader.setPath(modelPath);
-  mtlLoader.load(modelName + ".mtl", function (materials) {
+  mtlLoader.load(modelName + '.mtl', function (materials) {
     materials.preload();
 
     var objLoader = new OBJLoader();
     objLoader.setMaterials(materials);
     objLoader.setPath(modelPath);
-    objLoader.load(modelName + ".obj", function (obj) {
+    objLoader.load(modelName + '.obj', function (obj) {
       obj.visible = visibility;
       obj.name = modelName;
       obj.traverse(function (child) {
@@ -185,7 +185,7 @@ function genereteEnimies() {
       var enemy = new Enemy(camera, dirMoviment[indexMoviment], speedEnimies);
 
       if (indexMoviment === 2) {
-        loader.load("./assets/airplane/scene.gltf", (gltf) => {
+        loader.load('./assets/airplane/scene.gltf', (gltf) => {
           let object = gltf.scene;
           object.traverse(function (child) {
             if (child) {
@@ -196,7 +196,7 @@ function genereteEnimies() {
           enemy.object.add(object);
         });
       } else if (indexMoviment === 1) {
-        loader.load("./assets/teco-teco.glb", (gltf) => {
+        loader.load('./assets/teco-teco.glb', (gltf) => {
           let object = gltf.scene;
           object.traverse(function (child) {
             if (child) {
@@ -208,7 +208,7 @@ function genereteEnimies() {
         });
       } else {
         loader.load(
-          "./assets/fighter.glb",
+          './assets/fighter.glb',
           function (gltf) {
             let object = gltf.scene;
             object.traverse(function (child) {
@@ -236,7 +236,7 @@ function genereteEnemiesGround() {
   if (animationOn) {
     return setInterval(() => {
       var enimie = new EnemiesGround(camera);
-      loadOBJFile("./assets/tank/", "tank", 13, -90, true, enimie.object);
+      loadOBJFile('./assets/tank/', 'tank', 13, -90, true, enimie.object);
       scene.add(enimie.object);
       enemiesGround.push(enimie);
     }, 6000);
@@ -325,13 +325,13 @@ function initialState() {
   loopMissiles = genereteMissiles();
   loopShotEnemies = genereteShotEnemies();
   loopHealth = genereteHealth();
-  menu.style.display = "none";
-  healthbar.style.display = "block";
+  menu.style.display = 'none';
+  healthbar.style.display = 'block';
 }
 
 function startGame() {
   animationOn = true;
-  start.style.display = "none";
+  start.style.display = 'none';
   initialState();
 }
 
@@ -395,7 +395,7 @@ function gameOver() {
   enimies = [];
 
   setTimeout(() => {
-    menu.style.display = "grid";
+    menu.style.display = 'grid';
   }, 1000);
 }
 
@@ -625,13 +625,13 @@ function collisionManager() {
 var healthbar = HealthBar();
 
 var controls = new InfoBox();
-controls.add("Plane Short");
+controls.add('Plane Short');
 controls.addParagraph();
-controls.add("Up arrow move to up");
-controls.add("Down arrow move to down");
-controls.add("Left arrow move to left");
-controls.add("Right arrow move to right");
-controls.add("Space or Ctrl dispatch shot");
+controls.add('Up arrow move to up');
+controls.add('Down arrow move to down');
+controls.add('Left arrow move to left');
+controls.add('Right arrow move to right');
+controls.add('Space or Ctrl dispatch shot');
 controls.show();
 
 export function pause() {
