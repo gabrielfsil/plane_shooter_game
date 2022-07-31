@@ -47,8 +47,8 @@ const backgroundSound = new THREE.Audio(listener);
 audioLoader.load("./assets/sounds/sampleMusic.mp3", function(buffer){
   backgroundSound.setBuffer(buffer);
   backgroundSound.setLoop(true);
-  backgroundSound.setVolume(0.4);
-  // backgroundSound.play()
+  backgroundSound.setVolume(0.2);
+  backgroundSound.play()
 })
 
 
