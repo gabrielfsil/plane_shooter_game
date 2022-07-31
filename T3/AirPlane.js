@@ -14,11 +14,6 @@ export function createBoundingSpheres(sphere) {
   return boundingSpheres;
 }
 
-var angle = degreesToRadians(90);
-
-const vector = new THREE.Vector3(0, 0, 1);
-const vectorY = new THREE.Vector3(0, 1, 0);
-const vectorAux = new THREE.Vector3(0, 0, 1);
 class Airplane {
   constructor() {
     var airPlaneGeometry = new THREE.CylinderGeometry(3, 3, 4, 20);
@@ -33,6 +28,7 @@ class Airplane {
     this.bounding = createBoundingBox(this.object);
     this.breakdown = 0;
     this.fall = true;
+    this.gameplay = false
 
     this.cadence = setInterval(() => {
       this.enabled = true;
@@ -46,8 +42,8 @@ class Airplane {
   }
 
   addBreakdown(damage) {
-    // if (keyboard.pressed("G")) {
-    if (true) {
+
+    if (this.gameplay) {
       console.log("Modo Furtivo");
     } else {
       if (this.breakdown < 5) {
@@ -83,6 +79,10 @@ class Airplane {
   moviment(animationOn, camera) {
     keyboard.update();
 
+    if(keyboard.down("G")){
+      this.gameplay = !this.gameplay
+    }
+
     var speed = 0.7;
     this.object.position.y = 10
     if (animationOn) {
@@ -97,7 +97,6 @@ class Airplane {
           if (this.object.rotation.x < degreesToRadians(45)) {
             this.object.rotateX(degreesToRadians(speed*2));
           }
-          vector.applyAxisAngle(vectorAux, degreesToRadians(-speed));
           this.object.translateZ(speed);
         } else {
           if (this.object.rotation.x > 0) {
@@ -110,8 +109,6 @@ class Airplane {
           if (this.object.rotation.x > degreesToRadians(-45)) {
             this.object.rotateX(degreesToRadians(-speed* 2));
           }
-          vector.applyAxisAngle(vector, -this.object.rotation.x);
-
           this.object.translateZ(-speed);
         } else {
           if (this.object.rotation.x < 0) {
@@ -120,15 +117,21 @@ class Airplane {
         }
       }
     } else {
-      // if (this.fall && this.object.position.y > 0) {
-      //     this.object.translateX(speed);
-      //     this.object.translateY(-speed * 0.2);
-      //     this.object.translateZ(-speed * 0.2);
-      // }
+      if (this.fall && this.object.position.y > 0 && this.breakdown >= 5) {
+          this.object.translateX(speed);
+          this.object.translateY(-speed * 0.2);
+          this.object.translateZ(-speed * 0.2);
+      }
     }
   }
 
   shot() {
+    if(keyboard.down("ctrl")){
+      var sphere = new Shot(this.object.position, new THREE.Vector3(1, 0, 0));
+
+      return sphere;
+    }
+    
     if (keyboard.pressed("ctrl")) {
       if (this.enabled) {
         this.enabled = false;

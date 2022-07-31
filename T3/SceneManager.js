@@ -232,6 +232,59 @@ export function MenuGame(initialState) {
   return contentBox;
 }
 
+export function StartGame(startGame) {
+  var contentBox = document.createElement("div");
+  contentBox.style.display = "grid";
+  contentBox.style.position = "absolute";
+  contentBox.style.left = `${(screen.availWidth - 640) / 2}px`;
+  contentBox.style.top = `${(screen.availHeight - 480) / 2}px`;
+  contentBox.style.width = "640px";
+  contentBox.style.height = "480px";
+  contentBox.style.background = "#fd9000";
+  contentBox.style.borderRadius = "8px";
+
+  var title = document.createElement("h3");
+  title.style.fontFamily = "sans-serif";
+  title.style.fontWeight = "bold";
+  title.style.fontSize = "72px";
+  title.style.textAlign = "center";
+
+  var textTitle = document.createTextNode("Plane Shooter Game!");
+
+  title.appendChild(textTitle);
+  contentBox.appendChild(title);
+
+  var text = document.createElement("p");
+  text.style.fontFamily = "sans-serif";
+  text.style.fontSize = "24px";
+  text.style.textAlign = "center";
+
+  var textContent = document.createTextNode(
+    "Aperte o botão abaixo para iniciar"
+  );
+
+  text.appendChild(textContent);
+  contentBox.appendChild(text);
+
+  var button = document.createElement("button");
+  button.append("Iniciar");
+  button.style.height = "48px";
+  button.style.width = "174px";
+  button.style.margin = "0 233px 0 233px";
+  button.style.borderRadius = "8px";
+  button.style.border = "none";
+  button.style.cursor = "pointer";
+  button.onclick = () => {
+    startGame();
+  };
+
+  contentBox.appendChild(button);
+
+  document.body.appendChild(contentBox);
+
+  return contentBox;
+}
+
 export function HealthBar() {
   var content = document.createElement("div");
   content.style.position = "absolute";
